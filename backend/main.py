@@ -1,81 +1,73 @@
+from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from uuid import uuid4
 import json
+import os
 import sqlite3
+import sys
+
+# Ensure backend directory is in python module search path
+backend_dir = str(Path(__file__).resolve().parent)
+if backend_dir not in sys.path:
+    sys.path.insert(0, backend_dir)
+
+# Starlette / FastAPI Router.__init__ backward compatibility shim
+try:
+    import starlette.routing
+    _orig_router_init = starlette.routing.Router.__init__
+    def _compat_router_init(self, *args, **kwargs):
+        for deprecated_kw in ("on_startup", "on_shutdown", "dependency_overrides_provider", "route_class", "deprecated", "include_in_schema"):
+            kwargs.pop(deprecated_kw, None)
+        return _orig_router_init(self, *args, **kwargs)
+    starlette.routing.Router.__init__ = _compat_router_init
+except Exception:
+    pass
 
 from fastapi import Depends, FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 
-import os
-
-try:
-    from database import create_db_and_tables, get_connection
-    from schemas import (
-        ActionRequest,
-        AuthRequest,
-        AnalyticsResponse,
-        AttackEvolveRequest,
-        AttackGenerateRequest,
-        AttackResponse,
-        AuditEventResponse,
-        DashboardResponse,
-        DefenseAdaptRequest,
-        DefenseAdaptResponse,
-        HealthResponse,
-        IncidentActionRequest,
-        IncidentResponse,
-        InvestigationRequest,
-        InvestigatorResponse,
-        ModelVersionResponse,
-        NetworkResponse,
-        RiskAnalysisResponse,
-        SimulationResponse,
-        SimulationStartRequest,
-        ThreatPatternRequest,
-        TransactionResponse,
-        UserResponse,
-    )
-    from services.risk_engine import analyze_transaction
-    from services.attack_engine import attack_type_parameters, evolve_attack as evolve_attack_model, generate_attack as generate_attack_model
-    from services.investigator import investigate_transaction
-except ImportError:
-    from database import create_db_and_tables, get_connection
-    from schemas import (
-        ActionRequest,
-        AuthRequest,
-        AnalyticsResponse,
-        AttackEvolveRequest,
-        AttackGenerateRequest,
-        AttackResponse,
-        AuditEventResponse,
-        DashboardResponse,
-        DefenseAdaptRequest,
-        DefenseAdaptResponse,
-        HealthResponse,
-        IncidentActionRequest,
-        IncidentResponse,
-        InvestigationRequest,
-        InvestigatorResponse,
-        ModelVersionResponse,
-        NetworkResponse,
-        RiskAnalysisResponse,
-        SimulationResponse,
-        SimulationStartRequest,
-        ThreatPatternRequest,
-        TransactionResponse,
-        UserResponse,
-    )
-    from services.risk_engine import analyze_transaction
-    from services.attack_engine import attack_type_parameters, evolve_attack as evolve_attack_model, generate_attack as generate_attack_model
-    from services.investigator import investigate_transaction
+from database import create_db_and_tables, get_connection
+from schemas import (
+    ActionRequest,
+    AuthRequest,
+    AnalyticsResponse,
+    AttackEvolveRequest,
+    AttackGenerateRequest,
+    AttackResponse,
+    AuditEventResponse,
+    DashboardResponse,
+    DefenseAdaptRequest,
+    DefenseAdaptResponse,
+    HealthResponse,
+    IncidentActionRequest,
+    IncidentResponse,
+    InvestigationRequest,
+    InvestigatorResponse,
+    ModelVersionResponse,
+    NetworkResponse,
+    RiskAnalysisResponse,
+    SimulationResponse,
+    SimulationStartRequest,
+    ThreatPatternRequest,
+    TransactionResponse,
+    UserResponse,
+)
+from services.risk_engine import analyze_transaction
+from services.attack_engine import attack_type_parameters, evolve_attack as evolve_attack_model, generate_attack as generate_attack_model
+from services.investigator import investigate_transaction
 
 from auth import (
     PASSWORD_HASHER, SESSION_COOKIE, clear_session_cookies, create_session, current_user,
     enforce_rate_limit, normalize_email, public_user, token_hash, validate_password, verify_password,
 )
 
-app = FastAPI(title="EvoPay AI API", version="0.2.0")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    create_db_and_tables()
+    yield
+
+app = FastAPI(title="EvoPay AI API", version="0.2.0", lifespan=lifespan)
 
 raw_origins = os.getenv("CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000,http://127.0.0.1:3000")
 allowed_origins = [origin.strip() for origin in raw_origins.split(",") if origin.strip() and origin.strip() != "*"]
@@ -83,6 +75,7 @@ allowed_origins = [origin.strip() for origin in raw_origins.split(",") if origin
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
+    allow_origin_regex=r"^https?://.*\.vercel\.app$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -101,10 +94,6 @@ def row(query: str, params: tuple = ()) -> dict | None:
 
 def audit(connection: sqlite3.Connection, user_id: str, event_type: str, entity_id: str, details: dict) -> None:
     connection.execute("INSERT INTO audit_events (event_type, entity_id, details, user_id) VALUES (?, ?, ?, ?)", (event_type, entity_id, json.dumps(details), user_id))
-
-@app.on_event("startup")
-def on_startup() -> None:
-    create_db_and_tables()
 
 @app.get("/api/health", response_model=HealthResponse)
 def health_check() -> dict[str, str]:

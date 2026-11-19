@@ -17,8 +17,8 @@ from database import get_connection
 SESSION_COOKIE = "evopay_session"
 CSRF_COOKIE = "evopay_csrf"
 SESSION_HOURS = max(1, int(os.getenv("EVOPAY_SESSION_HOURS", "12")))
-COOKIE_SECURE = os.getenv("EVOPAY_ENV", "development").lower() == "production"
-COOKIE_SAMESITE = "none" if COOKIE_SECURE else "lax"
+COOKIE_SECURE = os.getenv("COOKIE_SECURE", "true" if os.getenv("EVOPAY_ENV", "development").lower() == "production" else "false").lower() in ("1", "true", "yes")
+COOKIE_SAMESITE = os.getenv("COOKIE_SAMESITE", "none" if COOKIE_SECURE else "lax")
 PASSWORD_HASHER = PasswordHasher(time_cost=3, memory_cost=65536, parallelism=4, hash_len=32, salt_len=16)
 EMAIL_PATTERN = re.compile(r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
 _attempts: dict[str, deque[float]] = defaultdict(deque)
