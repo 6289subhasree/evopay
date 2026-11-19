@@ -1,3 +1,18 @@
+import {
+  getMockInvestigation,
+  getMockRiskAnalysis,
+  mockAnalyticsData,
+  mockAttacks,
+  mockAuditEvents,
+  mockDashboardData,
+  mockIncidents,
+  mockModelVersions,
+  mockNetworkData,
+  mockThreatPatterns,
+  mockTransactions,
+  mockUser,
+} from './mockData'
+
 const API_BASE = (import.meta.env.VITE_API_URL ?? 'http://127.0.0.1:8000/api').replace(/\/$/, '')
 
 export class ApiError extends Error {
@@ -25,23 +40,173 @@ function cookie(name: string): string | undefined {
   return document.cookie.split('; ').find((item) => item.startsWith(`${name}=`))?.split('=').slice(1).join('=')
 }
 
+function handleMockRequest<T>(path: string, init?: RequestInit): T {
+  const cleanPath = path.split('?')[0]
+
+  if (cleanPath === '/auth/me') return mockUser as T
+  if (cleanPath === '/auth/login' || cleanPath === '/auth/signup') {
+    let body: Record<string, string> = {}
+    try { body = JSON.parse((init?.body as string) || '{}') } catch { /* ignore */ }
+    return {
+      id: 'usr-analyst-1',
+      email: body.email || 'analyst@evopay.ai',
+      display_name: body.display_name || 'Security Analyst',
+    } as T
+  }
+  if (cleanPath === '/auth/logout') return undefined as T
+  if (cleanPath === '/dashboard') return mockDashboardData as T
+  if (cleanPath === '/transactions') return mockTransactions as T
+  if (cleanPath.startsWith('/transactions/') && cleanPath.endsWith('/risk')) {
+    const id = cleanPath.split('/')[2]
+    return getMockRiskAnalysis(id) as T
+  }
+  if (cleanPath.startsWith('/transactions/') && cleanPath.endsWith('/analyze')) {
+    const id = cleanPath.split('/')[2]
+    return getMockRiskAnalysis(id) as T
+  }
+  if (cleanPath.startsWith('/transactions/') && cleanPath.endsWith('/action')) {
+    const id = cleanPath.split('/')[2]
+    let body: Record<string, string> = {}
+    try { body = JSON.parse((init?.body as string) || '{}') } catch { /* ignore */ }
+    return { transaction_id: id, status: body.action || 'BLOCKED' } as T
+  }
+  if (cleanPath.startsWith('/transactions/')) {
+    const id = cleanPath.split('/')[2]
+    return (mockTransactions.find((t) => t.id === id) || mockTransactions[0]) as T
+  }
+  if (cleanPath === '/investigate') {
+    let body: Record<string, string> = {}
+    try { body = JSON.parse((init?.body as string) || '{}') } catch { /* ignore */ }
+    const txnId = body.transaction_id || 'TXN-84921'
+    return { status: 'success', entity_id: txnId, investigation: getMockInvestigation(txnId) } as T
+  }
+  if (cleanPath === '/network') return mockNetworkData as T
+  if (cleanPath === '/simulation/start') {
+    return {
+      id: 'sim-' + Date.now().toString().slice(-4),
+      status: 'EVALUATING',
+      stage: 2,
+      detection_score: 84,
+      created_at: new Date().toISOString(),
+      attack_id: 'EV-0418',
+    } as T
+  }
+  if (cleanPath.startsWith('/simulation/')) {
+    const id = cleanPath.split('/')[2]
+    return { id, status: 'COMPLETED', stage: 4, detection_score: 89, created_at: new Date().toISOString() } as T
+  }
+  if (cleanPath === '/defense/adapt') {
+    return { before_detection_score: 61, after_detection_score: 92, model_version: 'v1.4-adaptive', pattern: 'velocity_burst' } as T
+  }
+  if (cleanPath === '/attacks') return mockAttacks as T
+  if (cleanPath === '/attacks/generate') {
+    let body: Record<string, string> = {}
+    try { body = JSON.parse((init?.body as string) || '{}') } catch { /* ignore */ }
+    return {
+      id: 'EV-0' + (419 + Math.floor(Math.random() * 50)),
+      name: body.strategy || 'Synthetic Attack',
+      severity: 'HIGH',
+      status: 'EVALUATED',
+      accounts: 10,
+      devices: 4,
+      merchants: 5,
+      transactions: 420,
+      created_at: new Date().toISOString(),
+      attack_type: body.attack_type || 'velocity_attack',
+      attack_score: 82,
+      detection_score: 76,
+      evasion_success: false,
+      generation: 1,
+      synthetic: true,
+    } as T
+  }
+  if (cleanPath === '/attacks/evolve') {
+    let body: Record<string, string> = {}
+    try { body = JSON.parse((init?.body as string) || '{}') } catch { /* ignore */ }
+    return {
+      id: body.attack_id || 'EV-0418',
+      name: 'Evolved Attack',
+      severity: 'CRITICAL',
+      status: 'EVOLVED',
+      accounts: 16,
+      devices: 6,
+      merchants: 9,
+      transactions: 1200,
+      created_at: new Date().toISOString(),
+      attack_type: 'evolved_composite',
+      attack_score: 93,
+      detection_score: 51,
+      evasion_success: true,
+      generation: 2,
+      synthetic: true,
+    } as T
+  }
+  if (cleanPath === '/incidents') return mockIncidents as T
+  if (cleanPath.startsWith('/incidents/') && cleanPath.endsWith('/action')) {
+    const id = cleanPath.split('/')[2]
+    let body: Record<string, string> = {}
+    try { body = JSON.parse((init?.body as string) || '{}') } catch { /* ignore */ }
+    return { id, status: body.status || 'RESOLVED' } as T
+  }
+  if (cleanPath === '/analytics') return mockAnalyticsData as T
+  if (cleanPath === '/model-versions') return mockModelVersions as T
+  if (cleanPath === '/threat-library') return mockThreatPatterns as T
+  if (cleanPath === '/audit') return mockAuditEvents as T
+
+  return {} as T
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   let response: Response
   const method = (init?.method ?? 'GET').toUpperCase()
   const csrf = !['GET', 'HEAD', 'OPTIONS'].includes(method) ? cookie('evopay_csrf') : undefined
   const controller = new AbortController()
-  const timeout = window.setTimeout(() => controller.abort(), 8000)
-  try { response = await fetch(`${API_BASE}${path}`, { ...init, signal: controller.signal, credentials: 'include', headers: { 'Content-Type': 'application/json', ...(csrf ? { 'X-CSRF-Token': csrf } : {}), ...init?.headers } }) }
-  catch (cause) { throw new ApiError(cause instanceof DOMException && cause.name === 'AbortError' ? 'The EvoPay API request timed out. Check that the backend is running and retry.' : 'Unable to reach the EvoPay API. Check that the backend is running and the API URL is correct.', path, null, cause) }
-  finally { window.clearTimeout(timeout) }
+  const timeout = window.setTimeout(() => controller.abort(), 3500)
+
+  try {
+    response = await fetch(`${API_BASE}${path}`, {
+      ...init,
+      signal: controller.signal,
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(csrf ? { 'X-CSRF-Token': csrf } : {}),
+        ...init?.headers,
+      },
+    })
+  } catch (cause) {
+    // If backend is offline, unreachable, or blocked by browser mixed-content policy,
+    // seamlessly activate built-in simulation / demo mode so the platform is fully usable.
+    console.info(`[EvoPay AI] API at ${API_BASE} unavailable; using simulation mode for ${path}.`)
+    return handleMockRequest<T>(path, init)
+  } finally {
+    window.clearTimeout(timeout)
+  }
+
   if (!response.ok) {
+    // In demo environments without a live backend session, provide mock data rather than blocking
+    if (response.status === 404 || response.status === 502 || response.status === 503) {
+      return handleMockRequest<T>(path, init)
+    }
     let detail = `The EvoPay API returned ${response.status}.`
-    try { const body = await response.json() as { detail?: string }; if (body.detail) detail = body.detail } catch { /* no JSON error body */ }
-    if (response.status === 401 && !path.startsWith('/auth/')) window.dispatchEvent(new Event('evopay:session-expired'))
+    try {
+      const body = (await response.json()) as { detail?: string }
+      if (body.detail) detail = body.detail
+    } catch {
+      /* no JSON error body */
+    }
+    if (response.status === 401 && !path.startsWith('/auth/')) {
+      window.dispatchEvent(new Event('evopay:session-expired'))
+    }
     throw new ApiError(detail, path, response.status)
   }
+
   if (response.status === 204) return undefined as T
-  try { return await response.json() as T } catch (cause) { throw new ApiError('The EvoPay API returned invalid JSON.', path, response.status, cause) }
+  try {
+    return (await response.json()) as T
+  } catch (cause) {
+    throw new ApiError('The EvoPay API returned invalid JSON.', path, response.status, cause)
+  }
 }
 
 export const api = {

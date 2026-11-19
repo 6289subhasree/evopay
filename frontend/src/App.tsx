@@ -12,6 +12,7 @@ import Incidents from './pages/Incidents'
 import Analytics from './pages/Analytics'
 import Settings from './pages/Settings'
 import { ApiError, api, type DashboardData, type User } from './lib/api'
+import { mockUser } from './lib/mockData'
 import Auth from './pages/Auth'
 
 type RouteConfig = { title: string; kicker: string; icon: typeof LayoutDashboard; description: string }
@@ -68,7 +69,7 @@ function App() {
   const config = routes[path] ?? routes['/dashboard']
   const logout = async () => { try { await api.logout() } finally { setUser(null) } }
   if (restoring) return <div className="session-restore"><div className="brand-symbol"><ShieldCheck size={18} /></div><span>Restoring secure session</span></div>
-  if (sessionError) return <div className="session-restore"><div className="brand-symbol"><TriangleAlert size={18} /></div><h1>Connection unavailable</h1><p>{sessionError}</p><button className="primary-button" onClick={() => setSessionAttempt((value) => value + 1)}>Retry connection</button></div>
+  if (sessionError) return <div className="session-restore"><div className="brand-symbol"><TriangleAlert size={18} /></div><h1>Connection unavailable</h1><p>{sessionError}</p><div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}><button className="primary-button" onClick={() => setSessionAttempt((value) => value + 1)}>Retry connection</button><button className="primary-button" style={{ background: 'rgba(255,255,255,0.1)' }} onClick={() => { setSessionError(null); setUser(mockUser) }}>Explore in Demo Mode</button></div></div>
   if (!user) return <Auth onAuthenticated={setUser} />
   return <AppShell path={path} onNavigate={navigate}><TopBar config={config} user={user} onLogout={logout} /><AnimatePresence mode="wait"><motion.main key={path} className="page-content" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: .22 }}>{path === '/dashboard' && <Dashboard navigate={navigate} />}{path === '/red-team' && <CommandDashboard navigate={navigate} />}{path === '/simulation' && <Simulation />}{path === '/transactions' && <Transactions />}{path === '/network' && <Network />}{path === '/blue-team' && <BlueTeam />}{path === '/incidents' && <Incidents />}{path === '/analytics' && <Analytics />}{path === '/settings' && <Settings />}</motion.main></AnimatePresence></AppShell>
 }

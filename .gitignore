@@ -12,3 +12,5 @@ backend/evopay.db
 .env
 frontend/.env
 backend/.env
+.vercel
+.env*.local
