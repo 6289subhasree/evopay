@@ -29,7 +29,7 @@ export default function Analytics() {
       <div className="data-page-heading" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '24px' }}>
         <div>
           <p className="eyebrow">Performance Intelligence <span>•</span> Defense Metrics</p>
-          <h1 style={{ margin: 0, fontSize: '32px', fontWeight: 500 }}>Analytics</h1>
+          <h1>Analytics</h1>
           <p className="subheading">Metrics calculated from recorded synthetic simulation data.</p>
         </div>
         <button className="secondary-button" onClick={loadData}>
@@ -46,7 +46,7 @@ export default function Analytics() {
         <div className="command-metric">
           <div className="command-metric-icon blue"><ShieldAlert size={15} /></div>
           <span>False Positive Rate</span>
-          <strong style={{ color: '#8ab8ff' }}>{data?.false_positive_rate == null ? 'Not evaluated' : `${data.false_positive_rate}%`}</strong>
+          <strong style={{ color: '#dfcfaa' }}>{data?.false_positive_rate == null ? 'Not evaluated' : `${data.false_positive_rate}%`}</strong>
         </div>
         <div className="command-metric">
           <div className="command-metric-icon purple"><Clock3 size={15} /></div>
@@ -56,7 +56,7 @@ export default function Analytics() {
         <div className="command-metric">
           <div className="command-metric-icon cyan"><BrainCircuit size={15} /></div>
           <span>Active Model Version</span>
-          <strong style={{ color: '#57dcdb' }}>{data?.model_version ?? 'Not evaluated'}</strong>
+          <strong style={{ color: '#bff04c' }}>{data?.model_version ?? 'Not evaluated'}</strong>
         </div>
       </div>
 
@@ -77,18 +77,18 @@ export default function Analytics() {
               <AreaChart data={chartData}>
                 <defs>
                   <linearGradient id="eventGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#43d9e6" stopOpacity={0.25} />
-                    <stop offset="100%" stopColor="#43d9e6" stopOpacity={0} />
+                    <stop offset="0%" stopColor="#bff04c" stopOpacity={0.25} />
+                    <stop offset="100%" stopColor="#bff04c" stopOpacity={0} />
                   </linearGradient>
                   <linearGradient id="blockGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="#ef747b" stopOpacity={0.3} />
                     <stop offset="100%" stopColor="#ef747b" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: '#6c7b91', fontSize: 11 }} />
+                <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: '#83827a', fontSize: 11 }} />
                 <YAxis hide />
-                <Tooltip contentStyle={{ background: '#111d2e', border: '1px solid #263b50', borderRadius: 8, color: '#f5f8fb' }} />
-                <Area type="monotone" dataKey="events" stroke="#43d9e6" strokeWidth={2} fill="url(#eventGrad)" />
+                <Tooltip contentStyle={{ background: '#22221d', border: '1px solid #403f36', borderRadius: 8, color: '#faf9f6' }} />
+                <Area type="monotone" dataKey="events" stroke="#bff04c" strokeWidth={2} fill="url(#eventGrad)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -117,7 +117,7 @@ export default function Analytics() {
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '11px', fontFamily: 'DM Mono, monospace' }}>
             <thead>
-              <tr style={{ color: '#688096', borderBottom: '1px solid #1c3345' }}>
+              <tr style={{ color: '#858479', borderBottom: '1px solid #34342d' }}>
                 <th style={{ padding: '10px 14px' }}>Model Version</th>
                 <th style={{ padding: '10px 14px' }}>Training Samples</th>
                 <th style={{ padding: '10px 14px' }}>Precision</th>
@@ -128,13 +128,13 @@ export default function Analytics() {
             </thead>
             <tbody>
               {versions.map((ver) => (
-                <tr key={ver.id} style={{ borderBottom: '1px solid #142838', color: '#c7d6e2' }}>
-                  <td style={{ padding: '12px 14px', color: '#57dcdb', fontWeight: 600 }}>{ver.version}</td>
+                <tr key={ver.id} style={{ borderBottom: '1px solid #292923', color: '#d8d7d1' }}>
+                  <td style={{ padding: '12px 14px', color: '#bff04c', fontWeight: 600 }}>{ver.version}</td>
                   <td style={{ padding: '12px 14px' }}>{ver.training_samples.toLocaleString()}</td>
                   <td style={{ padding: '12px 14px', color: '#5ed596' }}>{(ver.precision * 100).toFixed(2)}%</td>
                   <td style={{ padding: '12px 14px', color: '#5ed596' }}>{(ver.recall * 100).toFixed(2)}%</td>
-                  <td style={{ padding: '12px 14px', color: '#8ab8ff' }}>{(ver.f1 * 100).toFixed(2)}%</td>
-                  <td style={{ padding: '12px 14px', color: '#6e8499' }}>{ver.created_at?.slice(0, 10) || '—'}</td>
+                  <td style={{ padding: '12px 14px', color: '#dfcfaa' }}>{(ver.f1 * 100).toFixed(2)}%</td>
+                  <td style={{ padding: '12px 14px', color: '#89887e' }}>{ver.created_at?.slice(0, 10) || '—'}</td>
                 </tr>
               ))}
             </tbody>

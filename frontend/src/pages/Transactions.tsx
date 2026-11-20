@@ -131,15 +131,15 @@ function DetailDrawer({
       {error && <div className="error-state" style={{ padding: 12, marginTop: 12 }}>{error}</div>}
 
       {investigation && (
-        <div className="glass-card" style={{ padding: '14px', margin: '18px 0', borderColor: '#2f6270' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', color: '#57dcdb' }}>
+        <div className="glass-card" style={{ padding: '14px', margin: '18px 0', borderColor: '#596738' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', color: '#bff04c' }}>
             <Sparkles size={15} />
             <strong style={{ fontSize: '12px' }}>AI Investigator Finding</strong>
           </div>
-          <p style={{ margin: '0 0 8px', fontSize: '11px', color: '#cadbe7', lineHeight: '1.45' }}>
+          <p style={{ margin: '0 0 8px', fontSize: '11px', color: '#dde4cd', lineHeight: '1.45' }}>
             {investigation.finding}
           </p>
-          <div style={{ fontSize: '10px', color: '#7b92a5' }}>
+          <div style={{ fontSize: '10px', color: '#95948b' }}>
             Attack Type: <b style={{ color: '#e4b258' }}>{investigation.attack_type}</b> · Recommended: <b style={{ color: '#ef747b' }}>{investigation.recommended_action}</b>
           </div>
         </div>
@@ -157,7 +157,7 @@ function DetailDrawer({
       </div>
 
       <div style={{ marginTop: '20px' }}>
-        <span style={{ display: 'block', marginBottom: '8px', color: '#71879c', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '.08em' }}>
+        <span style={{ display: 'block', marginBottom: '8px', color: '#8c8b81', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '.08em' }}>
           Execute Mitigation Decision
         </span>
         <div className="drawer-actions">
@@ -236,7 +236,7 @@ export default function Transactions() {
       <div className="data-page-heading" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '24px' }}>
         <div>
 <p className="eyebrow">Payment Intelligence <span>•</span> Recorded synthetic data</p>
-          <h1 style={{ margin: 0, fontSize: '32px', fontWeight: 500 }}>Transactions</h1>
+          <h1>Transactions</h1>
           <p className="subheading">Inspect synthetic payment events, signal evaluations, and server decisions.</p>
         </div>
         <button className="secondary-button" onClick={load}>
@@ -245,22 +245,22 @@ export default function Transactions() {
       </div>
 
       <div style={{ display: 'flex', gap: '12px', marginBottom: '16px', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#0e2234', border: '1px solid #1f374c', padding: '0 12px', borderRadius: '6px', height: '36px', width: 'min(320px, 100%)' }}>
-          <Search size={14} color="#657d92" />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#24231e', border: '1px solid #3a3931', padding: '0 12px', borderRadius: '6px', height: '36px', width: 'min(320px, 100%)' }}>
+          <Search size={14} color="#818076" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by ID, customer, merchant, city..."
-            style={{ border: 0, background: 'transparent', outline: 'none', color: '#e3edf3', fontSize: '11px', width: '100%', fontFamily: 'DM Mono, monospace' }}
+            style={{ border: 0, background: 'transparent', outline: 'none', color: '#f1eee5', fontSize: '11px', width: '100%', fontFamily: 'DM Mono, monospace' }}
           />
           {search && (
-            <button onClick={() => setSearch('')} style={{ border: 0, background: 'transparent', color: '#748b9f', padding: 0 }}>
+            <button onClick={() => setSearch('')} style={{ border: 0, background: 'transparent', color: '#8f8e84', padding: 0 }}>
               <X size={13} />
             </button>
           )}
         </div>
 
-        <div style={{ display: 'flex', gap: '6px', background: '#0a1a2b', padding: '3px', borderRadius: '6px', border: '1px solid #1c3245' }}>
+        <div style={{ display: 'flex', gap: '6px', background: '#1d1c18', padding: '3px', borderRadius: '6px', border: '1px solid #34342d' }}>
           {(['ALL', 'BLOCKED', 'VERIFY', 'HOLD', 'ALLOWED'] as StatusFilter[]).map((f) => (
             <button
               key={f}
@@ -272,8 +272,8 @@ export default function Transactions() {
                 borderRadius: '4px',
                 fontSize: '10px',
                 fontFamily: 'DM Mono, monospace',
-                background: filter === f ? '#184755' : 'transparent',
-                color: filter === f ? '#e5f8fa' : '#72869a',
+                background: filter === f ? '#3d4726' : 'transparent',
+                color: filter === f ? '#f4f2eb' : '#8b8a81',
                 transition: '.15s ease',
               }}
             >
@@ -285,7 +285,7 @@ export default function Transactions() {
 
       <section className="glass-card" style={{ padding: '4px 0', overflow: 'hidden' }}>
         <div className="transaction-table" style={{ margin: 0 }}>
-          <div className="transaction-header" style={{ borderBottom: '1px solid #1b3042', padding: '12px 16px' }}>
+          <div className="transaction-header" style={{ borderBottom: '1px solid #32322b', padding: '12px 16px' }}>
             <span>Transaction ID</span>
             <span>Customer</span>
             <span>Merchant</span>
@@ -299,7 +299,7 @@ export default function Transactions() {
 {error && <div style={{ padding: '24px', textAlign: 'center', color: '#ef747b' }} className="error-state">Transaction API unavailable. No substitute data is being shown.</div>}
 
           {!loading && filteredItems.length === 0 && (
-            <div style={{ padding: '48px 24px', textAlign: 'center', color: '#6e8396', fontSize: '12px' }}>
+            <div style={{ padding: '48px 24px', textAlign: 'center', color: '#87867d', fontSize: '12px' }}>
               No transactions match the selected filter or search query.
             </div>
           )}
@@ -341,7 +341,7 @@ export default function Transactions() {
         </div>
       </section>
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '14px', color: '#677d91', fontSize: '11px', fontFamily: 'DM Mono, monospace' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '14px', color: '#818077', fontSize: '11px', fontFamily: 'DM Mono, monospace' }}>
         <span>Showing {filteredItems.length} of {items.length} synthetic transactions</span>
         <span>Click any row to inspect explainability and execute actions</span>
       </div>

@@ -42,7 +42,7 @@ export default function Settings() {
       <div className="data-page-heading" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '24px' }}>
         <div>
           <p className="eyebrow">Workspace Configuration <span>•</span> System Preferences</p>
-          <h1 style={{ margin: 0, fontSize: '32px', fontWeight: 500 }}>Settings</h1>
+          <h1>Settings</h1>
           <p className="subheading">Configure payment security policies, runtime connection parameters, and threat response thresholds.</p>
         </div>
         <button className="primary-button" onClick={handleSave}>
@@ -56,30 +56,30 @@ export default function Settings() {
             <div className="command-metric-icon cyan" style={{ margin: 0 }}><ShieldCheck size={16} /></div>
             <div>
               <h2 style={{ margin: 0, fontSize: '16px', fontWeight: 500 }}>Workspace Details</h2>
-              <span style={{ fontSize: '11px', color: '#748b9f' }}>Environment and deployment context</span>
+              <span style={{ fontSize: '11px', color: '#8f8e84' }}>Environment and deployment context</span>
             </div>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <div>
-              <label style={{ display: 'block', fontSize: '11px', color: '#889eb2', marginBottom: '6px', fontFamily: 'DM Mono, monospace' }}>
+              <label style={{ display: 'block', fontSize: '11px', color: '#a2a198', marginBottom: '6px', fontFamily: 'DM Mono, monospace' }}>
                 WORKSPACE NAME
               </label>
               <input
                 value={workspaceName}
                 onChange={(e) => setWorkspaceName(e.target.value)}
-                style={{ width: '100%', height: '36px', background: '#0b1d2e', border: '1px solid #1f374c', borderRadius: '5px', color: '#ecf3f8', padding: '0 12px', fontSize: '12px' }}
+                style={{ width: '100%', height: '36px', background: '#1f1e1a', border: '1px solid #3a3931', borderRadius: '5px', color: '#f6f4ee', padding: '0 12px', fontSize: '12px' }}
               />
             </div>
 
             <div>
-              <label style={{ display: 'block', fontSize: '11px', color: '#889eb2', marginBottom: '6px', fontFamily: 'DM Mono, monospace' }}>
+              <label style={{ display: 'block', fontSize: '11px', color: '#a2a198', marginBottom: '6px', fontFamily: 'DM Mono, monospace' }}>
                 ENVIRONMENT MODE
               </label>
               <select
                 value={env}
                 onChange={(e) => setEnv(e.target.value)}
-                style={{ width: '100%', height: '36px', background: '#0b1d2e', border: '1px solid #1f374c', borderRadius: '5px', color: '#ecf3f8', padding: '0 12px', fontSize: '12px' }}
+                style={{ width: '100%', height: '36px', background: '#1f1e1a', border: '1px solid #3a3931', borderRadius: '5px', color: '#f6f4ee', padding: '0 12px', fontSize: '12px' }}
               >
                 <option>Synthetic Simulation Sandbox</option>
                 <option>Staging Simulator</option>
@@ -87,10 +87,10 @@ export default function Settings() {
               </select>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0 0', borderTop: '1px solid #183042' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0 0', borderTop: '1px solid #313029' }}>
               <div>
-                <strong style={{ fontSize: '12px', display: 'block', color: '#d8e4ed' }}>API error policy</strong>
-                <span style={{ fontSize: '10px', color: '#71889c' }}>Unavailable APIs show an error and never substitute results.</span>
+                <strong style={{ fontSize: '12px', display: 'block', color: '#ebe7da' }}>API error policy</strong>
+                <span style={{ fontSize: '10px', color: '#8c8b81' }}>Unavailable APIs show an error and never substitute results.</span>
               </div>
             </div>
           </div>
@@ -101,22 +101,22 @@ export default function Settings() {
             <div className="command-metric-icon blue" style={{ margin: 0 }}><Server size={16} /></div>
             <div>
               <h2 style={{ margin: 0, fontSize: '16px', fontWeight: 500 }}>Runtime Status</h2>
-              <span style={{ fontSize: '11px', color: '#748b9f' }}>FastAPI backend & SQLite database status</span>
+              <span style={{ fontSize: '11px', color: '#8f8e84' }}>FastAPI backend & SQLite database status</span>
             </div>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 12px', background: '#0a1a2b', borderRadius: '6px', border: '1px solid #183044', fontSize: '11px' }}>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#889eb2' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 12px', background: '#1d1c18', borderRadius: '6px', border: '1px solid #32312a', fontSize: '11px' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#a2a198' }}>
                 <Globe2 size={14} /> Backend API Endpoint
               </span>
-              <strong style={{ color: '#57dcdb', fontFamily: 'DM Mono, monospace' }}>
+              <strong style={{ color: '#bff04c', fontFamily: 'DM Mono, monospace' }}>
                 {import.meta.env.VITE_API_URL ?? 'http://127.0.0.1:8000/api'}
               </strong>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 12px', background: '#0a1a2b', borderRadius: '6px', border: '1px solid #183044', fontSize: '11px' }}>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#889eb2' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 12px', background: '#1d1c18', borderRadius: '6px', border: '1px solid #32312a', fontSize: '11px' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#a2a198' }}>
                 <Database size={14} /> Database Storage
               </span>
               <strong style={{ color: '#5ed596', fontFamily: 'DM Mono, monospace' }}>
@@ -124,8 +124,8 @@ export default function Settings() {
               </strong>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 12px', background: '#0a1a2b', borderRadius: '6px', border: '1px solid #183044', fontSize: '11px' }}>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#889eb2' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 12px', background: '#1d1c18', borderRadius: '6px', border: '1px solid #32312a', fontSize: '11px' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#a2a198' }}>
                 <CircleDot size={14} /> Health Status
               </span>
               <strong style={{ color: apiOnline === true ? '#5ed596' : apiOnline === false ? '#ef747b' : '#e4b258', fontFamily: 'DM Mono, monospace' }}>
@@ -141,33 +141,33 @@ export default function Settings() {
           <div className="command-metric-icon amber" style={{ margin: 0 }}><Sliders size={16} /></div>
           <div>
             <h2 style={{ margin: 0, fontSize: '16px', fontWeight: 500 }}>Adaptive Risk Policy Thresholds</h2>
-            <span style={{ fontSize: '11px', color: '#748b9f' }}>Define risk score boundary actions (0 to 100)</span>
+            <span style={{ fontSize: '11px', color: '#8f8e84' }}>Define risk score boundary actions (0 to 100)</span>
           </div>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '14px' }}>
-          <div style={{ background: '#0c2226', padding: '14px', borderRadius: '6px', border: '1px solid #194644' }}>
+          <div style={{ background: '#1c2012', padding: '14px', borderRadius: '6px', border: '1px solid #353e21' }}>
             <span style={{ fontSize: '10px', color: '#61d697', fontFamily: 'DM Mono, monospace' }}>ALLOW ACTION</span>
-            <strong style={{ display: 'block', fontSize: '20px', margin: '4px 0', color: '#f0f6fa' }}>0 – {allowThreshold}</strong>
-            <small style={{ fontSize: '10px', color: '#7e96a4' }}>Seamless approval for normal transactions</small>
+            <strong style={{ display: 'block', fontSize: '20px', margin: '4px 0', color: '#f8f6f2' }}>0 – {allowThreshold}</strong>
+            <small style={{ fontSize: '10px', color: '#96958c' }}>Seamless approval for normal transactions</small>
           </div>
 
-          <div style={{ background: '#0d2836', padding: '14px', borderRadius: '6px', border: '1px solid #1f4f66' }}>
-            <span style={{ fontSize: '10px', color: '#69cddd', fontFamily: 'DM Mono, monospace' }}>VERIFY ACTION</span>
-            <strong style={{ display: 'block', fontSize: '20px', margin: '4px 0', color: '#f0f6fa' }}>{allowThreshold + 1} – {stepUpThreshold}</strong>
-            <small style={{ fontSize: '10px', color: '#7e96a4' }}>Step-up MFA & biometric confirmation</small>
+          <div style={{ background: '#262c17', padding: '14px', borderRadius: '6px', border: '1px solid #4a562f' }}>
+            <span style={{ fontSize: '10px', color: '#c2f155', fontFamily: 'DM Mono, monospace' }}>VERIFY ACTION</span>
+            <strong style={{ display: 'block', fontSize: '20px', margin: '4px 0', color: '#f8f6f2' }}>{allowThreshold + 1} – {stepUpThreshold}</strong>
+            <small style={{ fontSize: '10px', color: '#96958c' }}>Step-up MFA & biometric confirmation</small>
           </div>
 
           <div style={{ background: '#262216', padding: '14px', borderRadius: '6px', border: '1px solid #584a22' }}>
             <span style={{ fontSize: '10px', color: '#e4b258', fontFamily: 'DM Mono, monospace' }}>HOLD ACTION</span>
-            <strong style={{ display: 'block', fontSize: '20px', margin: '4px 0', color: '#f0f6fa' }}>{stepUpThreshold + 1} – {holdThreshold}</strong>
-            <small style={{ fontSize: '10px', color: '#7e96a4' }}>Temporary settlement hold for review</small>
+            <strong style={{ display: 'block', fontSize: '20px', margin: '4px 0', color: '#f8f6f2' }}>{stepUpThreshold + 1} – {holdThreshold}</strong>
+            <small style={{ fontSize: '10px', color: '#96958c' }}>Temporary settlement hold for review</small>
           </div>
 
           <div style={{ background: '#2c1920', padding: '14px', borderRadius: '6px', border: '1px solid #622d37' }}>
             <span style={{ fontSize: '10px', color: '#ef747b', fontFamily: 'DM Mono, monospace' }}>BLOCK ACTION</span>
-            <strong style={{ display: 'block', fontSize: '20px', margin: '4px 0', color: '#f0f6fa' }}>{holdThreshold + 1} – 100</strong>
-            <small style={{ fontSize: '10px', color: '#7e96a4' }}>Autonomous block & incident triage</small>
+            <strong style={{ display: 'block', fontSize: '20px', margin: '4px 0', color: '#f8f6f2' }}>{holdThreshold + 1} – 100</strong>
+            <small style={{ fontSize: '10px', color: '#96958c' }}>Autonomous block & incident triage</small>
           </div>
         </div>
       </section>
@@ -178,7 +178,7 @@ export default function Settings() {
             <p className="eyebrow">Audit & Compliance</p>
             <h2 style={{ margin: 0, fontSize: '16px', fontWeight: 500 }}>System Event Log</h2>
           </div>
-          <span style={{ fontSize: '10px', color: '#688096', fontFamily: 'DM Mono, monospace' }}>
+          <span style={{ fontSize: '10px', color: '#858479', fontFamily: 'DM Mono, monospace' }}>
             {auditLogs.length} events recorded
           </span>
         </div>
@@ -186,7 +186,7 @@ export default function Settings() {
         <div style={{ maxHeight: '260px', overflowY: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px', fontFamily: 'DM Mono, monospace' }}>
             <thead>
-              <tr style={{ color: '#688096', borderBottom: '1px solid #1c3345', textAlign: 'left' }}>
+              <tr style={{ color: '#858479', borderBottom: '1px solid #34342d', textAlign: 'left' }}>
                 <th style={{ padding: '8px 12px' }}>Event Type</th>
                 <th style={{ padding: '8px 12px' }}>Target Entity</th>
                 <th style={{ padding: '8px 12px' }}>Details</th>
@@ -195,11 +195,11 @@ export default function Settings() {
             </thead>
             <tbody>
               {auditLogs.slice(0, 20).map((evt) => (
-                <tr key={evt.id} style={{ borderBottom: '1px solid #132435', color: '#cad8e2' }}>
-                  <td style={{ padding: '8px 12px', color: '#57dcdb' }}>{evt.event_type}</td>
+                <tr key={evt.id} style={{ borderBottom: '1px solid #272621', color: '#d9d8d3' }}>
+                  <td style={{ padding: '8px 12px', color: '#bff04c' }}>{evt.event_type}</td>
                   <td style={{ padding: '8px 12px' }}>{evt.entity_id}</td>
                   <td style={{ padding: '8px 12px', maxWidth: '340px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{evt.details}</td>
-                  <td style={{ padding: '8px 12px', color: '#667d91' }}>{evt.created_at}</td>
+                  <td style={{ padding: '8px 12px', color: '#818076' }}>{evt.created_at}</td>
                 </tr>
               ))}
             </tbody>

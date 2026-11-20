@@ -96,7 +96,7 @@ export default function Incidents() {
       <div className="data-page-heading" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '24px' }}>
         <div>
 <p className="eyebrow">Response Queue <span>•</span> Recorded incidents</p>
-          <h1 style={{ margin: 0, fontSize: '32px', fontWeight: 500 }}>Incidents</h1>
+          <h1>Incidents</h1>
           <p className="subheading">Triage high-signal fraud threats, trigger AI investigation reports, and maintain an auditable state.</p>
         </div>
         <button className="secondary-button" onClick={loadData}>
@@ -124,17 +124,17 @@ export default function Incidents() {
       </div>
 
       <div style={{ display: 'flex', gap: '12px', marginBottom: '16px', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#0e2234', border: '1px solid #1f374c', padding: '0 12px', borderRadius: '6px', height: '36px', width: 'min(300px, 100%)' }}>
-          <Search size={14} color="#657d92" />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#24231e', border: '1px solid #3a3931', padding: '0 12px', borderRadius: '6px', height: '36px', width: 'min(300px, 100%)' }}>
+          <Search size={14} color="#818076" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search incidents..."
-            style={{ border: 0, background: 'transparent', outline: 'none', color: '#e3edf3', fontSize: '11px', width: '100%', fontFamily: 'DM Mono, monospace' }}
+            style={{ border: 0, background: 'transparent', outline: 'none', color: '#f1eee5', fontSize: '11px', width: '100%', fontFamily: 'DM Mono, monospace' }}
           />
         </div>
 
-        <div style={{ display: 'flex', gap: '6px', background: '#0a1a2b', padding: '3px', borderRadius: '6px', border: '1px solid #1c3245' }}>
+        <div style={{ display: 'flex', gap: '6px', background: '#1d1c18', padding: '3px', borderRadius: '6px', border: '1px solid #34342d' }}>
           {(['ALL', 'OPEN', 'INVESTIGATING', 'CONTAINED', 'RESOLVED'] as StatusFilter[]).map((st) => (
             <button
               key={st}
@@ -146,8 +146,8 @@ export default function Incidents() {
                 borderRadius: '4px',
                 fontSize: '10px',
                 fontFamily: 'DM Mono, monospace',
-                background: filter === st ? '#184755' : 'transparent',
-                color: filter === st ? '#e5f8fa' : '#72869a',
+                background: filter === st ? '#3d4726' : 'transparent',
+                color: filter === st ? '#f4f2eb' : '#8b8a81',
                 transition: '.15s ease',
               }}
             >
@@ -160,7 +160,7 @@ export default function Incidents() {
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.8fr) minmax(320px, 1fr)', gap: '16px' }}>
         <section className="glass-card" style={{ padding: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-            <span style={{ fontSize: '11px', fontFamily: 'DM Mono, monospace', color: '#688096', textTransform: 'uppercase' }}>
+            <span style={{ fontSize: '11px', fontFamily: 'DM Mono, monospace', color: '#858479', textTransform: 'uppercase' }}>
               Incident Stream ({filtered.length})
             </span>
           </div>
@@ -169,7 +169,7 @@ export default function Incidents() {
           {error && <div className="error-state" style={{ padding: '16px', textAlign: 'center' }}>Incident service unavailable. No substitute result is being shown.</div>}
 
           {!loading && filtered.length === 0 && (
-            <div style={{ padding: '36px', textAlign: 'center', color: '#6e8396', fontSize: '12px' }}>
+            <div style={{ padding: '36px', textAlign: 'center', color: '#87867d', fontSize: '12px' }}>
               No incidents matching current criteria.
             </div>
           )}
@@ -192,8 +192,8 @@ export default function Incidents() {
                       alignItems: 'center',
                       justifyContent: 'space-between',
                       gap: '14px',
-                      borderLeft: `3px solid ${isCrit ? '#ef747b' : isHigh ? '#e4b258' : '#57dcdb'}`,
-                      background: selectedIncident?.id === item.id ? '#122a3a' : 'rgba(12, 26, 42, 0.65)',
+                      borderLeft: `3px solid ${isCrit ? '#ef747b' : isHigh ? '#e4b258' : '#bff04c'}`,
+                      background: selectedIncident?.id === item.id ? '#2b311b' : 'rgba(29,29,25, 0.65)',
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -212,10 +212,10 @@ export default function Incidents() {
                       </div>
                       <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <strong style={{ fontSize: '13px', color: '#f0f5fa' }}>{item.title}</strong>
+                          <strong style={{ fontSize: '13px', color: '#f8f6f2' }}>{item.title}</strong>
                           <span className={`severity-${item.severity.toLowerCase()}`}>{item.severity}</span>
                         </div>
-                        <small style={{ color: '#6e8499', fontFamily: 'DM Mono, monospace', fontSize: '10px' }}>
+                        <small style={{ color: '#89887e', fontFamily: 'DM Mono, monospace', fontSize: '10px' }}>
                           {item.id} · {item.created_at}
                         </small>
                       </div>
@@ -228,8 +228,8 @@ export default function Incidents() {
                           fontFamily: 'DM Mono, monospace',
                           padding: '4px 8px',
                           borderRadius: '4px',
-                          border: '1px solid #234154',
-                          color: isResolved ? '#61d697' : isInvestigating ? '#e4b258' : '#8ab8ff',
+                          border: '1px solid #434d2a',
+                          color: isResolved ? '#61d697' : isInvestigating ? '#e4b258' : '#dfcfaa',
                         }}
                       >
                         {item.status}
@@ -268,43 +268,43 @@ export default function Incidents() {
 
         <aside style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           {selectedIncident && (
-            <div className="glass-card" style={{ padding: '18px', borderColor: '#2f6070' }}>
+            <div className="glass-card" style={{ padding: '18px', borderColor: '#596738' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '12px' }}>
                 <div>
                   <p className="eyebrow">Active Investigation</p>
                   <h3 style={{ margin: 0, fontSize: '16px' }}>{selectedIncident.title}</h3>
                 </div>
-                <button onClick={() => setSelectedIncident(null)} style={{ border: 0, background: 'transparent', color: '#688096' }}>
+                <button onClick={() => setSelectedIncident(null)} style={{ border: 0, background: 'transparent', color: '#858479' }}>
                   <X size={15} />
                 </button>
               </div>
 
-              <div style={{ fontSize: '11px', color: '#889eb2', marginBottom: '14px' }}>
-                Incident ID: <b style={{ color: '#57dcdb', fontFamily: 'DM Mono, monospace' }}>{selectedIncident.id}</b>
+              <div style={{ fontSize: '11px', color: '#a2a198', marginBottom: '14px' }}>
+                Incident ID: <b style={{ color: '#bff04c', fontFamily: 'DM Mono, monospace' }}>{selectedIncident.id}</b>
               </div>
 
               {investigating && <div className="loading-state" style={{ padding: '16px 0', fontSize: '11px' }}>Analyzing fraud cluster...</div>}
 
               {investigation && (
-                <div style={{ background: '#0d1e2e', padding: '12px', borderRadius: '6px', border: '1px solid #1a354a', fontSize: '11px' }}>
+                <div style={{ background: '#201f1b', padding: '12px', borderRadius: '6px', border: '1px solid #36352e', fontSize: '11px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#e4b258', marginBottom: '6px', fontWeight: 500 }}>
                     <Sparkles size={13} />
                     <span>Investigator Assessment</span>
                   </div>
-                  <p style={{ margin: '0 0 10px', color: '#d1e0eb', lineHeight: '1.45' }}>{investigation.finding}</p>
+                  <p style={{ margin: '0 0 10px', color: '#e8e3d4', lineHeight: '1.45' }}>{investigation.finding}</p>
 
                   <div style={{ marginBottom: '8px' }}>
-                    <span style={{ color: '#748b9e', fontSize: '10px', display: 'block', marginBottom: '4px' }}>Evidence Signals:</span>
+                    <span style={{ color: '#8e8d84', fontSize: '10px', display: 'block', marginBottom: '4px' }}>Evidence Signals:</span>
                     {investigation.evidence.map((ev) => (
-                      <div key={ev} style={{ display: 'flex', gap: '6px', alignItems: 'center', color: '#adbfc9', fontSize: '10px', margin: '3px 0' }}>
+                      <div key={ev} style={{ display: 'flex', gap: '6px', alignItems: 'center', color: '#bebeb8', fontSize: '10px', margin: '3px 0' }}>
                         <ShieldAlert size={12} color="#ef747b" />
                         <span>{ev}</span>
                       </div>
                     ))}
                   </div>
 
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px', paddingTop: '8px', borderTop: '1px solid #1b3345', fontSize: '10px' }}>
-                    <span>Attack Vector: <b style={{ color: '#57dcdb' }}>{investigation.attack_type}</b></span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px', paddingTop: '8px', borderTop: '1px solid #34332c', fontSize: '10px' }}>
+                    <span>Attack Vector: <b style={{ color: '#bff04c' }}>{investigation.attack_type}</b></span>
                     <span>Action: <b style={{ color: '#ef747b' }}>{investigation.recommended_action}</b></span>
                   </div>
                 </div>
@@ -314,19 +314,19 @@ export default function Incidents() {
 
           <div className="glass-card" style={{ padding: '18px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
-              <History size={16} color="#57dcdb" />
+              <History size={16} color="#bff04c" />
               <h3 style={{ margin: 0, fontSize: '15px' }}>Security Audit Trail</h3>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '420px', overflowY: 'auto' }}>
-              {auditEvents.length === 0 && <span style={{ color: '#688096', fontSize: '11px' }}>No audit events logged yet.</span>}
+              {auditEvents.length === 0 && <span style={{ color: '#858479', fontSize: '11px' }}>No audit events logged yet.</span>}
               {auditEvents.slice(0, 15).map((evt) => (
-                <div key={evt.id} style={{ padding: '8px 10px', background: '#0c1d2e', borderRadius: '5px', border: '1px solid #193144', fontSize: '10px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', color: '#57dcdb', fontFamily: 'DM Mono, monospace' }}>
+                <div key={evt.id} style={{ padding: '8px 10px', background: '#1f1f1b', borderRadius: '5px', border: '1px solid #32322b', fontSize: '10px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', color: '#bff04c', fontFamily: 'DM Mono, monospace' }}>
                     <strong>{evt.event_type}</strong>
-                    <span style={{ color: '#5b7389' }}>{evt.created_at?.slice(11, 19) ?? 'Timestamp unavailable'}</span>
+                    <span style={{ color: '#78776c' }}>{evt.created_at?.slice(11, 19) ?? 'Timestamp unavailable'}</span>
                   </div>
-                  <div style={{ color: '#889eb2', marginTop: '3px' }}>
-                    Target: <b style={{ color: '#d0dfea' }}>{evt.entity_id}</b>
+                  <div style={{ color: '#a2a198', marginTop: '3px' }}>
+                    Target: <b style={{ color: '#e7e2d3' }}>{evt.entity_id}</b>
                   </div>
                 </div>
               ))}

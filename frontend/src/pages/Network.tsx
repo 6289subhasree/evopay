@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link2, Network as NetworkIcon, RefreshCw, Search } from 'lucide-react'
 import { api, type NetworkData } from '../lib/api'
+import { NetworkGraph3D } from '../components/NetworkGraph3D'
 
 export default function Network() {
   const [data, setData] = useState<NetworkData | null>(null)
@@ -15,6 +16,7 @@ export default function Network() {
     <div className="graph-toolbar glass-card"><div className="graph-search"><Search size={15} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search recorded entities…" /></div></div>
     {error && <div className="error-state" style={{ padding: 22 }}>{error}</div>}
     {!data && !error && <div className="loading-state glass-card" style={{ padding: 22 }}>Loading relationship records</div>}
+    {data && <NetworkGraph3D data={data} highlight={ids} />}
     {data && <div className="network-layout"><section className="graph-card glass-card" style={{ padding: 24 }}><div className="section-heading"><div><p className="eyebrow">Entities</p><h2>{nodes.length} recorded</h2></div><NetworkIcon size={17} /></div><div className="activity-list">{nodes.map((node) => <div className="activity-item" key={node.id}><div className="activity-icon cyan"><NetworkIcon size={15} /></div><div className="activity-copy"><strong>{node.name}</strong><span>{node.id} · {node.type}{node.city ? ` · ${node.city}` : ''}</span></div></div>)}</div>{!nodes.length && <div className="empty-state">No matching entities.</div>}</section><aside className="network-sidebar"><div className="filter-card glass-card"><div className="section-heading"><div><p className="eyebrow">Relationships</p><h2>{relationships.length} recorded</h2></div><Link2 size={15} /></div>{relationships.map((edge, index) => <div className="recent-attack" key={`${edge.from}-${edge.to}-${index}`}><strong>{edge.from}</strong><span>{edge.type}</span><strong>{edge.to}</strong></div>)}{!relationships.length && <div className="empty-state">No relationships have been recorded.</div>}</div></aside></div>}
   </div>
 }
