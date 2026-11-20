@@ -1,9 +1,8 @@
 """EvoPay AI Analyst — Gemini, served from the FastAPI backend.
 
-Used when the app runs on Firebase Hosting + Cloud Run (requests to /api/** are
-routed here). The key comes from GEMINI_API_KEY, injected from Secret Manager.
-Without a key it answers 503 and the frontend falls back to its built-in analyst.
-Mirrors api/analyst.ts (the Vercel version) — keep the prompts in sync.
+Runs on Cloud Run; Vercel forwards /api/* here. The key comes from GEMINI_API_KEY,
+injected from Google Secret Manager. Without a key it answers 503 and the frontend
+falls back to its built-in analyst.
 """
 from __future__ import annotations
 

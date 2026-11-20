@@ -9,8 +9,8 @@ export type AnalystReply = { text: string; source: 'gemini' | 'offline'; model?:
  */
 export async function askAnalyst(mode: AnalystMode, context: unknown, question = ''): Promise<AnalystReply> {
   try {
-    // Same-origin: on Vercel this hits api/analyst.ts; on Firebase Hosting it is
-    // routed to the FastAPI backend on Cloud Run, which needs the session + CSRF token.
+    // Same-origin: Vercel forwards /api/* to the FastAPI backend on Cloud Run,
+    // which needs the session cookie + CSRF token.
     const csrf = document.cookie.split('; ').find((item) => item.startsWith('evopay_csrf='))?.split('=').slice(1).join('=')
     const response = await fetch('/api/analyst', {
       method: 'POST',

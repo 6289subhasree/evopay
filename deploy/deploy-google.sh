@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# EvoPay AI — deploy to Google Cloud (Cloud Run API + Firebase Hosting web app)
+# EvoPay AI — deploy the API to Google Cloud Run and connect the Vercel web app.
 #
-# Usage (macOS / Linux / Cloud Shell, from the repository root):
+# Usage (macOS / Linux / Cloud Shell, from the repository root, on the main branch):
 #   ./deploy/deploy-google.sh your-project-id
 #
 # You will be asked for your Gemini API key (input is hidden). Press Enter to skip.
@@ -14,10 +14,10 @@ SERVICE="${SERVICE:-evopay-api}"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 step() { printf '\n\033[32m==> %s\033[0m\n' "$1"; }
 
-step "Using project $PROJECT_ID ($REGION)"
+step "Using Google Cloud project $PROJECT_ID ($REGION)"
 gcloud config set project "$PROJECT_ID" >/dev/null
 
-step "Enabling Google Cloud APIs (Cloud Run, Cloud Build, Artifact Registry, Secret Manager)"
+step "Enabling Cloud Run, Cloud Build, Artifact Registry and Secret Manager"
 gcloud services enable run.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com secretmanager.googleapis.com
 
 read -r -s -p "Gemini API key (hidden; press Enter to skip): " GEMINI_KEY; echo
@@ -42,19 +42,26 @@ unset GEMINI_KEY
 step "Building and deploying the API to Cloud Run (first run takes ~5 minutes)"
 gcloud run deploy "$SERVICE" --source "$ROOT/backend" --region "$REGION" --allow-unauthenticated \
   --min-instances 0 --max-instances 1 --memory 1Gi --cpu 1 --timeout 60 \
-  --set-env-vars "EVOPAY_ENV=production,COOKIE_SAMESITE=lax,EVOPAY_SESSION_COOKIE=__session,EVOPAY_STARTER_WORKSPACE=true,EVOPAY_DATABASE_PATH=/tmp/evopay.db" \
-  "${SECRET_FLAGS[@]}"
+  --set-env-vars "EVOPAY_ENV=production,COOKIE_SAMESITE=lax,EVOPAY_STARTER_WORKSPACE=true,EVOPAY_DATABASE_PATH=/tmp/evopay.db" \
+  ${SECRET_FLAGS[@]+"${SECRET_FLAGS[@]}"}
 
-step "Making sure Firebase is enabled on the project"
-firebase projects:addfirebase "$PROJECT_ID" 2>/dev/null || echo "(Firebase already enabled, continuing)"
+URL="$(gcloud run services describe "$SERVICE" --region "$REGION" --format='value(status.url)')"
+echo "API is live at $URL"
 
-step "Building the web app for Firebase"
-(cd "$ROOT/frontend" && npm ci && npm run build:firebase)
+step "Connecting the Vercel web app to the API"
+node "$ROOT/deploy/connect-vercel.mjs" "$URL"
 
-step "Deploying to Firebase Hosting"
-(cd "$ROOT" && firebase deploy --only hosting --project "$PROJECT_ID")
+read -r -p "Commit and push vercel.json + frontend/.env.production so Vercel redeploys? (y/n) " ANSWER
+if [[ "$ANSWER" =~ ^([yY]|yes)$ ]]; then
+  (cd "$ROOT" && git add vercel.json frontend/.env.production && git commit -m "chore: connect Vercel web app to Cloud Run API" && git push)
+  echo "Pushed. Vercel will redeploy in about a minute."
+else
+  echo "Not pushed. Commit vercel.json and frontend/.env.production yourself when ready."
+fi
 
-printf '\n\033[32mDone! EvoPay is live at:\033[0m\n  https://%s.web.app\n  API health check: https://%s.web.app/api/health\n' "$PROJECT_ID" "$PROJECT_ID"
+printf '\n\033[32mDone!\033[0m\n'
+echo "  API health (direct):     $URL/api/health"
+echo "  API health (via Vercel): https://evopay-dun.vercel.app/api/health  (after Vercel redeploys)"
 echo
 echo "Judging day tip (no cold starts):"
 echo "  gcloud run services update $SERVICE --region $REGION --min-instances 1"

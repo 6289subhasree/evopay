@@ -98,14 +98,14 @@ On a held-out test set of 10,000 transactions from our generator, the current cl
 
 ## Built with Google Gemini
 
-EvoPay's analyst copilot is powered by **Google Gemini** through a server-side function (`api/analyst.ts`):
+EvoPay's analyst copilot is powered by **Google Gemini**, called from the backend (`backend/services/analyst.py`):
 
 - **Investigation briefs** for any transaction
 - **"Why was this blocked?"** explanations in plain English
 - **Attack-run summaries** for risk committees
 - **Copilot chat** over live payments and incidents
 
-Gemini only sees the workspace's own data and is instructed never to invent figures. The API key stays on the server and requests from other origins are rejected. If no key is configured, EvoPay falls back to a built-in rule-based analyst so the product never breaks.
+Gemini only sees the workspace's own data and is instructed never to invent figures. The API key lives in Google Secret Manager and only signed-in users can call the analyst. If no key is configured, EvoPay falls back to a built-in rule-based analyst so the product never breaks.
 
 ---
 
@@ -117,10 +117,8 @@ flowchart TB
         UI["Command Center · Arena · Checkout · What-If · Network · Policy"]
         COP["Gemini Copilot"]
     end
-    subgraph Edge["Serverless"]
+    subgraph Backend["FastAPI · Python (Google Cloud Run)"]
         AN["/api/analyst → Google Gemini"]
-    end
-    subgraph Backend["FastAPI · Python"]
         AUTH["Argon2 auth · server-side sessions · CSRF"]
         RED["Red Team engine<br/>attack generation & evolution"]
         BLUE["Blue Team engine<br/>ML · anomaly · graph · behaviour"]
@@ -142,14 +140,14 @@ flowchart TB
 - **CSRF protection** on every state-changing request
 - **Strict record ownership** — each analyst's workspace is isolated
 - **Audit trail** for every decision, action and investigation
-- **Gemini key server-side only**, with same-origin checks
+- **Gemini key in Google Secret Manager**, analyst available to signed-in users only
 
 ## Tech stack
 
 **Frontend:** React 19, TypeScript, Vite, Framer Motion, Recharts, Tailwind CSS
 **Backend:** FastAPI, Python 3.12, scikit-learn, pandas, SQLite / PostgreSQL
 **AI:** Google Gemini (analyst copilot), HistGradientBoosting + Isolation Forest (detection)
-**Hosting:** Google Cloud — Firebase Hosting (web) + Cloud Run (API, Mumbai) + Secret Manager (Gemini key). Vercel is also supported for the web app.
+**Hosting:** Vercel (web app) + Google Cloud Run (API, Mumbai) + Google Secret Manager (Gemini key). Vercel forwards `/api/*` to Cloud Run, so the browser talks to one domain.
 
 ---
 
@@ -189,7 +187,7 @@ App: `http://localhost:5173`. Without a running backend the app falls back to bu
 Create a key in [Google AI Studio](https://aistudio.google.com) and add it to your Vercel project as `GEMINI_API_KEY` (Settings → Environment Variables). Optionally set `GEMINI_MODEL` (default `gemini-3.5-flash-lite`).
 
 ### 5. Deploy on Google Cloud
-One command deploys the API to **Cloud Run** and the web app to **Firebase Hosting**, with the Gemini key in **Secret Manager**:
+One command deploys the API to **Google Cloud Run** (Gemini key in **Secret Manager**) and connects the Vercel web app to it:
 
 ```powershell
 .\deploy\deploy-google.ps1 -ProjectId YOUR_PROJECT_ID      # Windows

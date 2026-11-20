@@ -14,8 +14,8 @@ from fastapi import Depends, HTTPException, Request, Response
 
 from database import get_connection
 
-# Firebase Hosting forwards only a cookie named "__session" to Cloud Run, so the
-# session cookie name is configurable (EVOPAY_SESSION_COOKIE=__session in production).
+# Configurable so the API can sit behind proxies with cookie rules (e.g. Firebase
+# Hosting forwards only "__session"). The Vercel proxy forwards cookies unchanged.
 SESSION_COOKIE = os.getenv("EVOPAY_SESSION_COOKIE", "evopay_session")
 CSRF_COOKIE = "evopay_csrf"
 SESSION_HOURS = max(1, int(os.getenv("EVOPAY_SESSION_HOURS", "12")))
@@ -113,7 +113,7 @@ def current_user(request: Request) -> dict[str, str]:
         if request.method not in {"GET", "HEAD", "OPTIONS"}:
             # The CSRF token is bound to the session (only its hash is stored server-side),
             # so the header must match that hash. The readable CSRF cookie is checked too
-            # whenever the proxy forwards it (Firebase Hosting strips it on the way in).
+            # whenever it is forwarded (some proxies strip it on the way in).
             csrf_cookie = request.cookies.get(CSRF_COOKIE)
             csrf_header = request.headers.get("X-CSRF-Token")
             if not csrf_header or not secrets.compare_digest(token_hash(csrf_header), session["csrf_hash"]):
