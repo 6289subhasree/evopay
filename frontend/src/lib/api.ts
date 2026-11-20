@@ -14,6 +14,8 @@ import {
 } from './mockData'
 
 const API_BASE = (import.meta.env.VITE_API_URL ?? 'http://127.0.0.1:8000/api').replace(/\/$/, '')
+// Cloud Run can take several seconds to wake from zero, so production builds allow longer.
+const API_TIMEOUT_MS = Number(import.meta.env.VITE_API_TIMEOUT_MS) || 3500
 
 export class ApiError extends Error {
   readonly status: number | null
@@ -161,7 +163,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const method = (init?.method ?? 'GET').toUpperCase()
   const csrf = !['GET', 'HEAD', 'OPTIONS'].includes(method) ? cookie('evopay_csrf') : undefined
   const controller = new AbortController()
-  const timeout = window.setTimeout(() => controller.abort(), 3500)
+  const timeout = window.setTimeout(() => controller.abort(), API_TIMEOUT_MS)
 
   try {
     response = await fetch(`${API_BASE}${path}`, {

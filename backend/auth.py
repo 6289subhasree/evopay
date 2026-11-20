@@ -14,7 +14,9 @@ from fastapi import Depends, HTTPException, Request, Response
 
 from database import get_connection
 
-SESSION_COOKIE = "evopay_session"
+# Firebase Hosting forwards only a cookie named "__session" to Cloud Run, so the
+# session cookie name is configurable (EVOPAY_SESSION_COOKIE=__session in production).
+SESSION_COOKIE = os.getenv("EVOPAY_SESSION_COOKIE", "evopay_session")
 CSRF_COOKIE = "evopay_csrf"
 SESSION_HOURS = max(1, int(os.getenv("EVOPAY_SESSION_HOURS", "12")))
 COOKIE_SECURE = os.getenv("COOKIE_SECURE", "true" if os.getenv("EVOPAY_ENV", "development").lower() == "production" else "false").lower() in ("1", "true", "yes")
@@ -109,9 +111,14 @@ def current_user(request: Request) -> dict[str, str]:
             connection.commit()
             raise HTTPException(401, "Session has expired")
         if request.method not in {"GET", "HEAD", "OPTIONS"}:
+            # The CSRF token is bound to the session (only its hash is stored server-side),
+            # so the header must match that hash. The readable CSRF cookie is checked too
+            # whenever the proxy forwards it (Firebase Hosting strips it on the way in).
             csrf_cookie = request.cookies.get(CSRF_COOKIE)
             csrf_header = request.headers.get("X-CSRF-Token")
-            if not csrf_cookie or not csrf_header or not secrets.compare_digest(csrf_cookie, csrf_header) or not secrets.compare_digest(token_hash(csrf_header), session["csrf_hash"]):
+            if not csrf_header or not secrets.compare_digest(token_hash(csrf_header), session["csrf_hash"]):
+                raise HTTPException(403, "CSRF validation failed")
+            if csrf_cookie is not None and not secrets.compare_digest(csrf_cookie, csrf_header):
                 raise HTTPException(403, "CSRF validation failed")
         return public_user(session)
 

@@ -9,16 +9,20 @@ export type AnalystReply = { text: string; source: 'gemini' | 'offline'; model?:
  */
 export async function askAnalyst(mode: AnalystMode, context: unknown, question = ''): Promise<AnalystReply> {
   try {
+    // Same-origin: on Vercel this hits api/analyst.ts; on Firebase Hosting it is
+    // routed to the FastAPI backend on Cloud Run, which needs the session + CSRF token.
+    const csrf = document.cookie.split('; ').find((item) => item.startsWith('evopay_csrf='))?.split('=').slice(1).join('=')
     const response = await fetch('/api/analyst', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json', ...(csrf ? { 'X-CSRF-Token': csrf } : {}) },
       body: JSON.stringify({ mode, context, question }),
     })
     if (response.ok) {
       const data = await response.json()
       if (data?.text) return { text: data.text, source: 'gemini', model: data.model }
     }
-    const note = response.status === 503 ? 'Gemini key not configured — showing the built-in analyst.' : 'Gemini unavailable — showing the built-in analyst.'
+    const note = response.status === 503 || response.status === 401 ? 'Gemini key not configured — showing the built-in analyst.' : 'Gemini unavailable — showing the built-in analyst.'
     return { text: offlineAnswer(mode, context, question), source: 'offline', note }
   } catch {
     return { text: offlineAnswer(mode, context, question), source: 'offline', note: 'Gemini unavailable — showing the built-in analyst.' }
@@ -71,7 +75,11 @@ function offlineAnswer(mode: AnalystMode, context: any, question: string): strin
   // chat
   const txns: any[] = context.transactions ?? []
   const incidents: any[] = context.incidents ?? []
+  const totals = context.totals ?? null
   const blocked = txns.filter((txn) => txn.status === 'BLOCKED')
+  const blockedCount = totals?.by_status?.BLOCKED?.count ?? blocked.length
+  const blockedValue = totals?.by_status?.BLOCKED?.value ?? blocked.reduce((sum, txn) => sum + txn.amount, 0)
+  const totalCount = totals?.transactions ?? txns.length
   const riskiest = [...txns].sort((a, b) => b.risk_score - a.risk_score)[0]
   const open = incidents.filter((incident) => incident.status !== 'RESOLVED')
   const q = question.toLowerCase()
@@ -79,7 +87,7 @@ function offlineAnswer(mode: AnalystMode, context: any, question: string): strin
     return riskiest ? `Review ${riskiest.id} first: risk ${riskiest.risk_score}, ${rupees(riskiest.amount)} in ${riskiest.location}, currently ${riskiest.status}.\n- ${open.length} incident(s) are still open.\nNext action: open it in Transactions and check its device links in Fraud Network.` : 'There are no transactions recorded yet. Run an attack from the Red Team Lab first.'
   }
   return [
-    `Posture: ${txns.length} transactions recorded, ${blocked.length} blocked (${rupees(blocked.reduce((sum, txn) => sum + txn.amount, 0))} held back), ${open.length} open incident(s).`,
+    `Posture: ${totalCount} transactions recorded, ${blockedCount} blocked (${rupees(blockedValue)} held back), ${open.length} open incident(s).`,
     riskiest ? `- Highest risk: ${riskiest.id} at ${riskiest.risk_score} (${riskiest.status}).` : '',
     ...open.slice(0, 3).map((incident) => `- ${incident.id}: ${incident.title} — ${incident.severity}, ${incident.status}.`),
     'Next action: work the open incidents from highest severity down.',

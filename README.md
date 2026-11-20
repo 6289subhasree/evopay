@@ -149,7 +149,7 @@ flowchart TB
 **Frontend:** React 19, TypeScript, Vite, Framer Motion, Recharts, Tailwind CSS
 **Backend:** FastAPI, Python 3.12, scikit-learn, pandas, SQLite / PostgreSQL
 **AI:** Google Gemini (analyst copilot), HistGradientBoosting + Isolation Forest (detection)
-**Hosting:** Vercel (web + serverless), any container host for the API
+**Hosting:** Google Cloud — Firebase Hosting (web) + Cloud Run (API, Mumbai) + Secret Manager (Gemini key). Vercel is also supported for the web app.
 
 ---
 
@@ -188,6 +188,17 @@ App: `http://localhost:5173`. Without a running backend the app falls back to bu
 ### 4. Enable Gemini (optional)
 Create a key in [Google AI Studio](https://aistudio.google.com) and add it to your Vercel project as `GEMINI_API_KEY` (Settings → Environment Variables). Optionally set `GEMINI_MODEL` (default `gemini-3.5-flash-lite`).
 
+### 5. Deploy on Google Cloud
+One command deploys the API to **Cloud Run** and the web app to **Firebase Hosting**, with the Gemini key in **Secret Manager**:
+
+```powershell
+.\deploy\deploy-google.ps1 -ProjectId YOUR_PROJECT_ID      # Windows
+```
+```bash
+./deploy/deploy-google.sh YOUR_PROJECT_ID                  # macOS / Linux / Cloud Shell
+```
+Full guide, configuration and troubleshooting: **[DEPLOY_GOOGLE_CLOUD.md](DEPLOY_GOOGLE_CLOUD.md)**.
+
 ### Tests
 ```bash
 cd backend
@@ -201,4 +212,4 @@ python -m pytest tests
 - Pilots on anonymised partner transaction streams
 - Automatic model retraining when a blind spot is confirmed
 - UPI-specific attack families (collect-request scams, QR swaps, mule onboarding)
-- Managed deployment on Google Cloud
+- Cloud SQL for PostgreSQL for multi-instance production deployments

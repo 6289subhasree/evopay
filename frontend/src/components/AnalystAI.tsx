@@ -56,9 +56,17 @@ export function Copilot() {
     setMessages((current) => [...current, { role: 'user', text: question }])
     setBusy(true)
     const [dashboard, incidents] = await Promise.all([api.dashboard().catch(() => null), api.incidents(20).catch(() => [])])
+    const all = dashboard?.transactions ?? []
+    const byStatus = all.reduce<Record<string, { count: number; value: number }>>((acc, txn) => {
+      const bucket = acc[txn.status] ?? { count: 0, value: 0 }
+      bucket.count += 1; bucket.value += txn.amount; acc[txn.status] = bucket
+      return acc
+    }, {})
     const context = {
       metrics: dashboard?.metrics,
-      transactions: (dashboard?.transactions ?? []).slice(0, 25).map(({ id, amount, location, payment_method, risk_score, status, device_id, created_at }) => ({ id, amount, location, payment_method, risk_score, status, device_id, created_at })),
+      // Totals over every recorded payment, plus the riskiest ones in detail (keeps the prompt small).
+      totals: { transactions: all.length, by_status: byStatus },
+      transactions: [...all].sort((a, b) => b.risk_score - a.risk_score).slice(0, 20).map(({ id, amount, location, payment_method, risk_score, status, device_id, created_at }) => ({ id, amount, location, payment_method, risk_score, status, device_id, created_at })),
       incidents: incidents.slice(0, 15).map(({ id, title, severity, status, transaction_id, created_at }) => ({ id, title, severity, status, transaction_id, created_at })),
     }
     const reply = await askAnalyst('chat', context, question)

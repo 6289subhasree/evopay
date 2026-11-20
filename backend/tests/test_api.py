@@ -187,7 +187,8 @@ def test_generated_attack_populates_related_views(empty_client):
     assert attack["synthetic"] is True
     assert attack["transactions"] == 19
     assert len(transactions) - before_count == attack["transactions"]
-    assert all(item["synthetic"] is True and item["id"].startswith("SYN-TXN-") for item in transactions)
+    assert all(item["synthetic"] is True and item["id"].startswith("TXN-") for item in transactions)
+    assert all(item["location"] != "Simulation Lab" and item["payment_method"] in {"UPI", "CARD", "NETBANKING"} for item in transactions)
     assert dashboard["metrics"]["transactions_monitored"] == attack["transactions"]
     assert dashboard["metrics"]["attacks_simulated"] == 1
     assert dashboard["metrics"]["mean_detection_score"] == attack["detection_score"]

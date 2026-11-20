@@ -56,6 +56,8 @@ from schemas import (
 from services.risk_engine import analyze_transaction
 from services.attack_engine import attack_type_parameters, evolve_attack as evolve_attack_model, generate_attack as generate_attack_model
 from services.investigator import investigate_transaction
+from services.workspace import insert_attack_records, seed_starter_workspace, starter_workspace_enabled
+from services.analyst import router as analyst_router
 
 from auth import (
     PASSWORD_HASHER, SESSION_COOKIE, clear_session_cookies, create_session, current_user,
@@ -80,6 +82,17 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def no_store_api_responses(request: Request, call_next):
+    """API responses are per-user: never let a CDN (e.g. Firebase Hosting) cache them."""
+    response = await call_next(request)
+    if request.url.path.startswith("/api/"):
+        response.headers["Cache-Control"] = "private, no-store"
+    return response
+
+app.include_router(analyst_router)
 
 def now() -> str:
     return datetime.now(timezone.utc).isoformat()
@@ -113,6 +126,8 @@ def signup(payload: AuthRequest, request: Request, response: Response) -> dict:
             connection.execute("INSERT INTO users (id, email, display_name, password_hash, created_at) VALUES (?, ?, ?, ?, ?)", (user_id, email, display_name, PASSWORD_HASHER.hash(payload.password), now()))
         except sqlite3.IntegrityError as error:
             raise HTTPException(409, "An account with this email already exists") from error
+        if starter_workspace_enabled():
+            seed_starter_workspace(connection, user_id, generate_attack_model, audit)
         create_session(connection, user_id, response)
         connection.commit()
     return {"id": user_id, "email": email, "display_name": display_name}
@@ -226,34 +241,19 @@ def attacks(user: dict = Depends(current_user)) -> list[dict]:
 
 @app.post("/api/attacks/generate", response_model=AttackResponse)
 def generate_attack(payload: AttackGenerateRequest, user: dict = Depends(current_user)) -> dict:
-    attack_id = f"EV-{uuid4().hex[:4].upper()}"
+    attack_id = f"EV-{uuid4().hex[:6].upper()}"
     attack_type = payload.attack_type or payload.strategy
     try:
         generated = generate_attack_model(attack_type, payload.generation)
     except ValueError as error:
         raise HTTPException(400, str(error)) from error
-    merchants = max(1, round(int(generated["accounts"]) / 2))
-    transaction_count = max(1, round(int(generated["accounts"]) * float(generated["transaction_velocity"])))
-    attack = (attack_id, payload.strategy, "CRITICAL", "UNDER SIMULATION", generated["accounts"], generated["devices"], merchants, transaction_count, now(), generated["attack_type"], json.dumps(generated), generated["attack_score"], generated["detection_score"], int(generated["evasion_success"]), generated["generation"])
-    created_at = attack[8]
+    created_at = now()
     with get_connection() as connection:
-        connection.execute("INSERT INTO attacks (id, name, severity, status, accounts, devices, merchants, transactions, created_at, attack_type, parameters, attack_score, detection_probability, evasion_success, generation, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (*attack, user["id"]))
-        customer_ids = [f"SYN-C-{attack_id[3:]}-{index + 1:03d}" for index in range(int(generated["accounts"]))]
-        device_ids = [f"SYN-D-{attack_id[3:]}-{index + 1:03d}" for index in range(int(generated["devices"]))]
-        merchant_ids = [f"SYN-M-{attack_id[3:]}-{index + 1:03d}" for index in range(merchants)]
-        connection.executemany("INSERT INTO customers (id, name, city, user_id) VALUES (?, ?, ?, ?)", [(item, f"Customer {index + 1}", "Simulation Lab", user["id"]) for index, item in enumerate(customer_ids)])
-        connection.executemany("INSERT INTO devices (id, platform, risk_score, user_id) VALUES (?, ?, ?, ?)", [(item, "Simulated device", int(generated["attack_score"]), user["id"]) for item in device_ids])
-        connection.executemany("INSERT INTO merchants (id, name, city, user_id) VALUES (?, ?, ?, ?)", [(item, f"Merchant {index + 1}", "Simulation Lab", user["id"]) for index, item in enumerate(merchant_ids)])
-        risk_score = int(generated["attack_score"])
-        classification = analyze_transaction({"risk_score": risk_score})["classification"]
-        status = {"LOW": "ALLOWED", "MEDIUM": "VERIFY", "HIGH": "HOLD", "CRITICAL": "BLOCKED"}[classification]
-        connection.executemany("INSERT INTO transactions (id, customer_id, merchant_id, amount, location, payment_method, risk_score, status, device_id, created_at, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [
-            (f"SYN-TXN-{attack_id[3:]}-{index + 1:04d}", customer_ids[index % len(customer_ids)], merchant_ids[index % len(merchant_ids)], 1000 + index * 125, "Simulation Lab", "SIMULATED", risk_score, status, device_ids[index % len(device_ids)], created_at, user["id"])
-            for index in range(transaction_count)
-        ])
+        merchants, transaction_count, _ = insert_attack_records(connection, user["id"], attack_id, generated, created_at)
+        connection.execute("INSERT INTO attacks (id, name, severity, status, accounts, devices, merchants, transactions, created_at, attack_type, parameters, attack_score, detection_probability, evasion_success, generation, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (attack_id, payload.strategy, "CRITICAL", "UNDER SIMULATION", generated["accounts"], generated["devices"], merchants, transaction_count, created_at, generated["attack_type"], json.dumps(generated), generated["attack_score"], generated["detection_score"], int(generated["evasion_success"]), generated["generation"], user["id"]))
         audit(connection, user["id"], "attack_generated", attack_id, generated)
         connection.commit()
-    return {"id": attack_id, "name": payload.strategy, "status": "UNDER SIMULATION", "severity": "CRITICAL", "merchants": merchants, "transactions": transaction_count, **generated, "created_at": attack[8], "synthetic": True}
+    return {"id": attack_id, "name": payload.strategy, "status": "UNDER SIMULATION", "severity": "CRITICAL", "merchants": merchants, "transactions": transaction_count, **generated, "created_at": created_at, "synthetic": True}
 
 @app.post("/api/attacks/evolve", response_model=AttackResponse)
 def evolve_attack(payload: AttackEvolveRequest, user: dict = Depends(current_user)) -> dict:
