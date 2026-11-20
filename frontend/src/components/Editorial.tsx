@@ -92,7 +92,7 @@ export function PageOutro({ path, navigate }: { path: string; navigate: (path: s
       <span className="outro-title">{next.title}<ArrowUpRight className="outro-arrow" /></span>
     </button>
     <div className="outro-foot">
-      <span>EvoPay <b>Lab</b></span>
+      <span>EvoPay <b>AI</b></span>
       <span>Press <kbd>⌘K</kbd> to jump anywhere · <kbd>g</kbd> + letter for shortcuts</span>
       <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>Back to top ↑</button>
     </div>

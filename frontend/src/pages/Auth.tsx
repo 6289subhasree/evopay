@@ -2,7 +2,7 @@ import { FormEvent, PointerEvent as ReactPointerEvent, useState } from 'react'
 import { Blocks, Eye, EyeOff, ShieldCheck } from 'lucide-react'
 import { api, type User } from '../lib/api'
 
-function CardStack3D() {
+export function CardStack3D() {
   const [tilt, setTilt] = useState({ x: 0, y: 0 })
   const onMove = (event: ReactPointerEvent<HTMLDivElement>) => {
     const rect = event.currentTarget.getBoundingClientRect()
@@ -45,8 +45,8 @@ export default function Auth({ onAuthenticated }: { onAuthenticated: (user: User
   const changeMode = (next: 'login' | 'signup') => { setMode(next); setError(null); setPassword('') }
   return <main className="auth-page">
     <section className="auth-story">
-      <div className="auth-brand"><span><Blocks size={18} /></span>EvoPay <b>Lab</b></div>
-      <div className="auth-story-copy"><p>CONTROLLED ADVERSARIAL RESEARCH</p><h1>Your simulation records.<br />Your isolated workspace.</h1><span>Server-side sessions and strict record ownership keep each analyst's experiments separate.</span></div>
+      <div className="auth-brand"><span><Blocks size={18} /></span>EvoPay <b>AI</b></div>
+      <div className="auth-story-copy"><p>ADAPTIVE PAYMENT FRAUD DEFENCE</p><h1>Fraud defence that<br />learns faster than fraud.</h1><span>Server-side sessions and strict record ownership keep each analyst's experiments separate.</span></div>
       <CardStack3D />
       <div className="auth-assurance"><ShieldCheck size={16} /><div><strong>Session protected</strong><small>Credentials and session tokens never enter browser storage.</small></div></div>
     </section>

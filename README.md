@@ -1,437 +1,204 @@
+<div align="center">
+
 # EvoPay AI
 
-### Adversarial AI for Payment Fraud Detection
+### Adaptive payment fraud defence
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-evopay--dun.vercel.app-brightgreen?style=for-the-badge&logo=vercel)](https://evopay-dun.vercel.app)
-[![Vercel Deployment](https://img.shields.io/badge/Deployment-Production%20Ready-blue?style=for-the-badge&logo=vercel)](https://evopay-dun.vercel.app)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
+**Fraud evolves. Your defence should too.**
 
-EvoPay AI is a security research and simulation platform that models payment fraud as an **adversarial problem**.
+[![Live demo](https://img.shields.io/badge/Live%20demo-evopay--dun.vercel.app-c8f36a?style=for-the-badge&labelColor=11120f)](https://evopay-dun.vercel.app)
+[![Built with Gemini](https://img.shields.io/badge/Built%20with-Google%20Gemini-c8f36a?style=for-the-badge&labelColor=11120f)](#built-with-google-gemini)
 
-Instead of testing a fraud detector only against static historical patterns, EvoPay introduces a controlled **Red Team vs Blue Team** loop: synthetic attacks are generated, evaluated against an ensemble detection system, evolved when they evade detection, and used to identify potential defense blind spots.
+![EvoPay AI homepage](docs/screenshots/homepage.png)
 
-> **Fraud evolves. Your defense should too.**
-
----
-
-## 🌐 Live Application
-
-* **Production URL:** [https://evopay-dun.vercel.app](https://evopay-dun.vercel.app)
-* **Preview Deployment:** [https://evopay-3sw3bv5xs-subhasree-pauls-projects.vercel.app](https://evopay-3sw3bv5xs-subhasree-pauls-projects.vercel.app)
-* **Simulation Mode:** Interactive offline demo mode enabled out-of-the-box with pre-seeded synthetic attack scenarios, transactions, entity graph, and defense analytics.
+</div>
 
 ---
 
-## Overview
+## The problem
 
-Generative AI makes fraudulent behavior easier to vary, automate, and scale. Traditional fraud systems are often evaluated against historical static datasets, while adversarial attackers continuously adapt their techniques.
+India's payment rails move at a scale no human team can review. UPI alone processed **25.47 billion transactions worth ₹31.53 lakh crore in October 2026** — more than ₹1 lakh crore every day ([NPCI data via Free Press Journal](https://www.freepressjournal.in/business/upi-transactions-hit-2547-billion-in-october-value-soars-to-3153-lakh-crore)). Every one of those payments needs an allow / challenge / block decision in milliseconds.
 
-EvoPay explores an adaptive counter-defense loop:
+At the same time, the money at stake keeps climbing: banks reported frauds involving **₹48,021 crore in FY26, up 46% year-on-year and a three-year high** ([RBI Annual Report 2025-26 via The Statesman](https://www.thestatesman.com/business/bank-fraud-cases-reduced-in-fy26-but-total-amount-highest-in-three-years-rbi-data-1503599710.html)).
+
+Most fraud models are trained and tested on **historical** patterns — but attackers adapt every week. A detector that looks great on last year's fraud can be blind to this week's variant, and when it does block a payment, analysts and customers rarely learn *why*.
+
+## The solution
+
+EvoPay runs a continuous **Red Team vs Blue Team loop** against your fraud defences:
+
+| | | |
+|---|---|---|
+| **1 · Attack** | **2 · Detect** | **3 · Adapt** |
+| A Red Team engine generates realistic fraud across 10 attack families and *evolves* each one to be harder to catch. | Every payment is scored 0–100 by four independent signals and given an explainable decision. | When an attack slips through, the blind spot is recorded, the attack evolves again, and the defence is hardened. |
 
 ```mermaid
-flowchart TD
-    A["1. Generate Synthetic Attack Scenario"] --> B["2. Stream Synthetic Transactions"]
-    B --> C["3. Blue Team Multi-Signal Detection"]
-    C --> D{"Detection Evasion Check"}
-    D -->|"Blocked (Score >= 80)"| E["Attack Contained & Logged"]
-    D -->|"Evaded / Review"| F["Record Defense Blind Spot"]
-    F --> G["Evolve Attack Strategy"]
-    G --> H["Adapt Defense Parameters & Model"]
-    H --> I["Re-test Evolved Attack Against Adapted Defense"]
-    I --> C
+flowchart LR
+    A[Generate attack] --> B[Score every payment<br/>4 signals]
+    B --> C{Detection ≥ evasion line?}
+    C -->|Yes| D[Contained & logged]
+    C -->|No| E[Record blind spot]
+    E --> F[Evolve attack]
+    E --> G[Harden defence]
+    F --> B
+    G --> B
 ```
-
-> **Note:** The entire platform operates strictly on **synthetic payment data** designed for controlled security experimentation. No real payment credentials, card numbers, or live banking networks are connected.
 
 ---
 
-## Key Features
+## Product tour
 
-### 🔴 Red Team (Adversarial Engine)
-Generate controlled synthetic fraud scenarios across multiple attack vectors:
-* **Synthetic Identity**: Blending real and fabricated identity signals.
-* **Account Takeover**: Simulating sudden behavioral, device, and location deviations.
-* **Card Testing**: High-velocity authorizations with micro-amounts and card number variation.
-* **Money Mule Network**: Dispersed origin transactions converging into centralized destination nodes.
-* **Merchant Collusion**: Clustered routing to suspicious or freshly registered merchant entities.
-* **Behavioral Mimicry**: Synthetic fraud designed to emulate standard consumer spending distributions.
-* **Device Rotation**: High account-to-device switching ratios.
-* **Refund Abuse**: Disproportionate refund-to-purchase ratios.
-* **Velocity Attacks**: Burst authorizations within narrow time windows.
-* **Composite Attacks**: Multi-stage combined vectors designed to evade single-heuristic defenses.
+| Feature | What it does |
+|---|---|
+| **Evolution Arena** | Watch one attack family mutate generation by generation. A static defence slowly goes blind; EvoPay's adaptive defence records each blind spot and recovers. |
+| **Live Checkout** | The customer's view: a UPI checkout scored in real time — instant approval, OTP step-up, review, or decline. Tapping *Pay* repeatedly looks like card testing and gets challenged. |
+| **What-If Lab** | Move any payment signal and watch the score, decision and reasons update instantly. |
+| **3D Fraud Network** | Rotate the entity graph of customers, merchants and devices; click a node to isolate its links and expose shared-device mule rings. |
+| **Policy Backtester** | Change the Allow / Verify / Hold / Block thresholds and replay them over recorded payments to see exactly what would change — before touching production. |
+| **Gemini Copilot** | Ask questions about live payments and incidents; get grounded investigation briefs and plain-English explanations. |
+| **Command Center, Incidents & Alerts** | Live posture, rupee value protected, an incident queue with audit trail, an alerts centre, and CSV export. |
+| **Developer console** | Integration guide with a live API console and cURL / JavaScript / Python snippets. |
 
-### 🔵 Blue Team (Defense Operations)
-Evaluates each incoming transaction using an ensemble of independent signals rather than a single static threshold:
-* **Machine Learning Classifier**: Supervised classification predicting fraud probability.
-* **Anomaly Detection**: Unsupervised behavioral deviation scores via Isolation Forest heuristics.
-* **Behavioral Analysis**: Spending frequency, amount entropy, and temporal deviation against baseline profiles.
-* **Graph Intelligence**: Multi-hop entity graph analysis mapping customer, device, IP, and merchant associations.
-* **Velocity Metrics**: Rolling 1-minute and 10-minute transaction bursts.
-
-```text
-Decision Matrix:
-  0 – 30   → ALLOW
- 31 – 60   → VERIFY (Step-up Authentication)
- 61 – 80   → HOLD (Analyst Queue)
- 81 – 100  → BLOCK (Automated Containment)
-```
-
-### 🧠 Adaptive Defense Loop
-When an attack successfully evades detection, EvoPay logs the scenario as a **Defense Blind Spot**, updates feature weights, recalibrates thresholds, and re-evaluates the defense posture.
-
-### 🕸️ Entity Graph Intelligence
-Models relational topologies across:
-`Customer ↔ Account ↔ Device ↔ Merchant ↔ Transaction`
+<table>
+<tr>
+<td width="50%"><img src="docs/screenshots/evolution-arena.png" alt="Evolution Arena"/><br/><sub><b>Evolution Arena</b> — static defence (red) falls below the evasion line; adaptive defence (green) recovers.</sub></td>
+<td width="50%"><img src="docs/screenshots/live-checkout.png" alt="Live Checkout"/><br/><sub><b>Live Checkout</b> — a large purchase on a new device triggers an OTP step-up.</sub></td>
+</tr>
+<tr>
+<td width="50%"><img src="docs/screenshots/what-if-lab.png" alt="What-If Lab"/><br/><sub><b>What-If Lab</b> — the four-signal breakdown behind a BLOCK decision.</sub></td>
+<td width="50%"><img src="docs/screenshots/fraud-network-3d.png" alt="3D Fraud Network"/><br/><sub><b>3D Fraud Network</b> — drag to orbit, click to isolate relationships.</sub></td>
+</tr>
+</table>
 
 ---
 
-## System Architecture
+## How the risk engine decides
+
+Each payment is scored by four independent signals and combined into one 0–100 risk score:
+
+| Signal | Weight | Looks at |
+|---|---|---|
+| ML classifier (HistGradientBoosting) | 35% | amount deviation, failed attempts, velocity and engineered features |
+| Graph intelligence | 25% | links to high-risk entities, shared devices, suspicious relationships |
+| Anomaly detection (Isolation Forest) | 20% | unusual velocity, device sharing and failure patterns |
+| Behavioural analysis | 20% | deviation from the customer's spending baseline, location change, merchant concentration |
+
+| Score | Decision | Customer experience |
+|---|---|---|
+| 0 – 30 | **ALLOW** | Payment goes straight through |
+| 31 – 60 | **VERIFY** | Step-up check (OTP) |
+| 61 – 80 | **HOLD** | Sent to the analyst queue |
+| 81 – 100 | **BLOCK** | Payment stopped, incident opened |
+
+Every decision carries the reasons that drove it (e.g. *"Device linked to multiple accounts"*, *"Behaviour differs significantly from historical baseline"*).
+
+On a held-out test set of 10,000 transactions from our generator, the current classifier (v1.0) reaches 99.45% precision and 99.78% recall (`backend/ml/models/metrics.json`). We treat this as a baseline only — the point of EvoPay is that static benchmarks are not enough.
+
+---
+
+## Built with Google Gemini
+
+EvoPay's analyst copilot is powered by **Google Gemini** through a server-side function (`api/analyst.ts`):
+
+- **Investigation briefs** for any transaction
+- **"Why was this blocked?"** explanations in plain English
+- **Attack-run summaries** for risk committees
+- **Copilot chat** over live payments and incidents
+
+Gemini only sees the workspace's own data and is instructed never to invent figures. The API key stays on the server and requests from other origins are rejected. If no key is configured, EvoPay falls back to a built-in rule-based analyst so the product never breaks.
+
+---
+
+## Architecture
 
 ```mermaid
 flowchart TB
-    subgraph Client["Frontend Layer (Vercel)"]
-        UI["React 19 + Vite Web Application"]
-        DASH["Command Center Dashboard"]
-        RED_UI["Red Team Simulator"]
-        GRAPH_UI["Entity Graph Visualizer"]
-        FALLBACK["Offline Simulation Fallback"]
-        UI --- DASH
-        UI --- RED_UI
-        UI --- GRAPH_UI
-        UI --- FALLBACK
+    subgraph Client["Web app · React 19 + Vite (Vercel)"]
+        UI["Command Center · Arena · Checkout · What-If · Network · Policy"]
+        COP["Gemini Copilot"]
     end
-
-    subgraph API_GATEWAY["API & Routing"]
-        VERCEL_REW["Vercel SPA Rewrites"]
-        CORS["CORS Middleware (Allow Vercel Origins)"]
-        AUTH["Argon2 Session & CSRF Security"]
+    subgraph Edge["Serverless"]
+        AN["/api/analyst → Google Gemini"]
     end
-
-    subgraph Backend["FastAPI Backend (Python 3.12)"]
-        APP["FastAPI Application (Async Lifespan)"]
-        SERVICES["Core Domain Services"]
-        
-        subgraph Red_Engine["Red Team Engine"]
-            GEN["Attack Generator"]
-            EVO["Evolution Engine"]
-            SYN["Synthetic Data Generator"]
-        end
-
-        subgraph Blue_Engine["Blue Team Engine"]
-            FE["Feature Engineering Pipeline"]
-            ML["ML Classifier (HistGradientBoosting)"]
-            ANOM["Anomaly Detector (IsolationForest)"]
-            GRAPH["Graph Intelligence Engine"]
-            RISK["Risk Decision Engine"]
-        end
+    subgraph Backend["FastAPI · Python"]
+        AUTH["Argon2 auth · server-side sessions · CSRF"]
+        RED["Red Team engine<br/>attack generation & evolution"]
+        BLUE["Blue Team engine<br/>ML · anomaly · graph · behaviour"]
+        INV["Automated investigator"]
     end
-
-    subgraph Storage["Data Tier"]
-        DB[("SQLite / PostgreSQL Database")]
-        MODELS["Persisted Scikit-Learn Models"]
-        AUDIT["Audit & Incident Ledger"]
-    end
-
-    UI -->|"HTTPS / REST"| VERCEL_REW
-    VERCEL_REW --> CORS
-    CORS --> AUTH
-    AUTH --> APP
-    APP --> SERVICES
-    SERVICES --> Red_Engine
-    SERVICES --> Blue_Engine
-    Red_Engine --> SYN
-    SYN --> FE
-    FE --> ML
-    FE --> ANOM
-    FE --> GRAPH
-    ML --> RISK
-    ANOM --> RISK
-    GRAPH --> RISK
-    APP --> DB
-    SERVICES --> DB
-    ML -.-> MODELS
-    RISK --> AUDIT
+    DB[("SQLite / PostgreSQL<br/>records · incidents · audit log")]
+    MODELS["scikit-learn models"]
+    UI -->|REST| AUTH
+    COP --> AN
+    AUTH --> RED & BLUE & INV
+    BLUE --> MODELS
+    RED & BLUE & INV --> DB
 ```
 
----
+## Security model
 
-## Transaction Analysis Sequence
+- **Argon2** password hashing
+- **Server-side sessions** in an `httpOnly` cookie — tokens never touch browser storage
+- **CSRF protection** on every state-changing request
+- **Strict record ownership** — each analyst's workspace is isolated
+- **Audit trail** for every decision, action and investigation
+- **Gemini key server-side only**, with same-origin checks
 
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Analyst as Security Analyst
-    participant Frontend as EvoPay UI (Vercel)
-    participant API as FastAPI Backend
-    participant RiskEngine as Multi-Signal Risk Engine
-    participant Graph as Graph Intelligence
-    participant ML as ML Inference
-    participant DB as Database
+## Tech stack
 
-    Analyst->>Frontend: Inspect / Trigger Transaction
-    Frontend->>API: POST /api/transactions/{id}/analyze
-    API->>DB: Fetch Transaction & Historical Profile
-    DB-->>API: Entity & Transaction Record
-    
-    par Parallel Risk Signals
-        API->>ML: Extract Features & Predict Score
-        ML-->>API: Fraud Probability
-    and Entity Relationship Check
-        API->>Graph: Traverse 2-hop Shared Entities
-        Graph-->>API: Graph Clustered Risk Weight
-    and Velocity Check
-        API->>RiskEngine: Calculate 60s Burst Count
-        RiskEngine-->>API: Velocity Anomaly Score
-    end
-
-    API->>RiskEngine: Aggregate Signals into Deterministic Score
-    RiskEngine-->>API: Score (0-100) + Action (ALLOW/VERIFY/HOLD/BLOCK)
-    
-    opt Score >= 80 (High Risk)
-        API->>DB: Create Security Incident (INC-XXX)
-        API->>DB: Log Audit Event
-    end
-
-    API-->>Frontend: Risk Analysis & Recommended Action
-    Frontend-->>Analyst: Render Risk Breakdown & Evidence
-```
+**Frontend:** React 19, TypeScript, Vite, Framer Motion, Recharts, Tailwind CSS
+**Backend:** FastAPI, Python 3.12, scikit-learn, pandas, SQLite / PostgreSQL
+**AI:** Google Gemini (analyst copilot), HistGradientBoosting + Isolation Forest (detection)
+**Hosting:** Vercel (web + serverless), any container host for the API
 
 ---
 
-## Entity Relationship Model
-
-```mermaid
-erDiagram
-    CUSTOMER ||--o{ TRANSACTION : initiates
-    MERCHANT ||--o{ TRANSACTION : receives
-    DEVICE ||--o{ TRANSACTION : originates
-    CUSTOMER ||--o{ DEVICE : registers
-    TRANSACTION ||--o| INCIDENT : triggers
-    ATTACK ||--o{ TRANSACTION : generates
-    ATTACK ||--o{ ATTACK_GENERATION : evolves
-    USER ||--o{ USER_SESSION : authenticates
-
-    CUSTOMER {
-        string id PK
-        string name
-        string city
-        string user_id FK
-    }
-
-    TRANSACTION {
-        string id PK
-        string customer_id FK
-        string merchant_id FK
-        string device_id FK
-        int amount
-        string location
-        string payment_method
-        int risk_score
-        string status
-        datetime created_at
-    }
-
-    DEVICE {
-        string id PK
-        string platform
-        int risk_score
-        string user_id FK
-    }
-
-    MERCHANT {
-        string id PK
-        string name
-        string city
-        string user_id FK
-    }
-
-    ATTACK {
-        string id PK
-        string name
-        string severity
-        string status
-        string attack_type
-        int attack_score
-        int detection_probability
-        int evasion_success
-        int generation
-    }
-
-    INCIDENT {
-        string id PK
-        string title
-        string severity
-        string status
-        string transaction_id FK
-        int risk_score
-        string reasons
-    }
-```
-
----
-
-## Repository Structure
-
-```text
-evopay/
-├── backend/
-│   ├── ml/                               # Machine learning pipelines
-│   │   ├── models/                       # Pre-trained classifier and anomaly models
-│   │   ├── data_generator.py             # Synthetic transaction data synthesizer
-│   │   ├── evaluate.py                   # Model evaluation metrics (F1, AUC, Recall)
-│   │   ├── feature_engineering.py        # Tabular feature transformation
-│   │   ├── predict.py                    # Inference wrapper
-│   │   └── train.py                      # Training script for HistGradientBoosting
-│   ├── services/
-│   │   ├── attack_engine.py              # Red Team generation & genetic evolution
-│   │   ├── investigator.py               # Automated incident evidence analysis
-│   │   └── risk_engine.py                # Multi-signal deterministic scoring engine
-│   ├── tests/
-│   │   └── test_api.py                   # Pytest suite with isolated test client
-│   ├── auth.py                           # Argon2 password hashing & session security
-│   ├── database.py                       # SQLite / PostgreSQL schema & demo seeding
-│   ├── init_db.py                        # Database migration & bootstrap script
-│   ├── main.py                           # FastAPI application & CORS configuration
-│   ├── models.py                         # SQLAlchemy database models
-│   ├── requirements.txt                  # Python runtime dependencies
-│   ├── run_tests.py                      # Test runner
-│   └── schemas.py                        # Pydantic request / response contracts
-│
-├── frontend/
-│   ├── src/
-│   │   ├── layouts/
-│   │   │   └── AppShell.tsx              # Application layout & navigation
-│   │   ├── lib/
-│   │   │   ├── api.ts                    # Typed API client with auto-simulation fallback
-│   │   │   └── mockData.ts               # Standalone demo data provider
-│   │   ├── pages/
-│   │   │   ├── Analytics.tsx             # Posture metrics & model tracking
-│   │   │   ├── Auth.tsx                  # Analyst sign-in & registration
-│   │   │   ├── BlueTeam.tsx              # Detection inspection & rule tuning
-│   │   │   ├── Dashboard.tsx             # Command center & threat feeds
-│   │   │   ├── Incidents.tsx             # Incident management & triage
-│   │   │   ├── Network.tsx               # Entity relationship graph
-│   │   │   ├── Settings.tsx              # Workspace configurations
-│   │   │   ├── Simulation.tsx            # Attack execution & evasion tracking
-│   │   │   └── Transactions.tsx          # Real-time transaction stream
-│   │   ├── App.tsx                       # Client-side router & session provider
-│   │   ├── main.tsx                      # React root entry
-│   │   └── index.css                     # Glassmorphic UI stylesheet
-│   ├── package.json                      # Frontend dependencies
-│   ├── tsconfig.json                     # TypeScript configuration
-│   ├── vercel.json                       # Subfolder SPA rewrites
-│   └── vite.config.ts                    # Vite build configuration
-│
-├── package.json                          # Monorepo build scripts for Vercel
-├── vercel.json                           # Root Vercel deployment configuration
-├── DEPLOYMENT.md                         # Full deployment documentation
-├── .env.example                          # Root environment template
-├── .gitignore                            # Git ignore rules
-└── README.md                             # Project documentation
-```
-
----
-
-## Tech Stack
-
-| Layer | Technologies |
-| :--- | :--- |
-| **Frontend** | React 19, TypeScript, Vite, Tailwind CSS, Framer Motion, Recharts, Lucide Icons |
-| **Backend** | Python 3.12, FastAPI, Starlette, Pydantic v2, SQLAlchemy |
-| **Security & Auth** | Argon2-cffi, SHA-256 session token hashing, CSRF Double-Submit cookies |
-| **Machine Learning** | Scikit-learn (HistGradientBoosting, IsolationForest), Pandas, NumPy |
-| **Database** | SQLite (zero-config local dev & demo) / PostgreSQL compatible |
-| **Hosting & CI/CD** | Vercel (Frontend CDN & Edge Network), Render / Railway (Backend) |
-
----
-
-## Getting Started
+## Getting started
 
 ### Prerequisites
-* **Node.js**: 18+ (Node 20 or 24 recommended)
-* **Python**: 3.10+ (Python 3.12 tested)
-* **Git**
+- Node.js 18+ (20 or 24 recommended)
+- Python 3.10+ (3.12 tested)
 
-### 1. Clone the Repository
+### 1. Clone
 ```bash
 git clone https://github.com/6289subhasree/evopay.git
 cd evopay
 ```
 
-### 2. Backend Setup
+### 2. Backend
 ```bash
 cd backend
-
-# Create virtual environment
 python -m venv venv
-
-# Activate virtual environment
-# Windows:
-venv\Scripts\activate
-# macOS/Linux:
-source venv/bin/activate
-
-# Install dependencies
+source venv/bin/activate        # Windows: venv\Scripts\activate
 pip install -r requirements.txt
-
-# Bootstrap and seed the database
-python init_db.py
-
-# Start FastAPI server
+python init_db.py               # create and seed the database
 uvicorn main:app --reload --port 8000
 ```
-* Backend API: `http://localhost:8000`
-* Interactive OpenAPI Docs: `http://localhost:8000/docs`
+API: `http://localhost:8000` · Interactive docs: `http://localhost:8000/docs`
 
-### 3. Frontend Setup
-In a new terminal window:
+### 3. Frontend
 ```bash
 cd frontend
-
-# Install dependencies
 npm install
-
-# Start development server
+cp .env.example .env            # VITE_API_URL=http://127.0.0.1:8000/api
 npm run dev
 ```
-* Web Application: `http://localhost:5173`
+App: `http://localhost:5173`. Without a running backend the app falls back to built-in demo data, so the UI is always explorable.
 
----
+### 4. Enable Gemini (optional)
+Create a key in [Google AI Studio](https://aistudio.google.com) and add it to your Vercel project as `GEMINI_API_KEY` (Settings → Environment Variables). Optionally set `GEMINI_MODEL` (default `gemini-3.5-flash-lite`).
 
-## Running Backend Tests
-
+### Tests
 ```bash
 cd backend
-python run_tests.py
-```
-Or directly with pytest:
-```bash
-pytest tests/test_api.py -v
+python -m pytest tests
 ```
 
 ---
 
-## Deployment
+## Roadmap
 
-Detailed deployment instructions for Vercel and Render are available in [DEPLOYMENT.md](DEPLOYMENT.md).
-
-### Quick Vercel Deploy (Frontend)
-1. Fork or push to GitHub.
-2. In [Vercel Dashboard](https://vercel.com/dashboard), import your repository.
-3. Root `vercel.json` and `package.json` will automatically build the Vite application and configure SPA route rewrites.
-4. Set `VITE_API_URL` to your backend URL (or leave default to use the built-in interactive demo mode).
-
----
-
-## Security Model
-
-* **Synthetic Data Only**: All customer names, card numbers, accounts, and transactions are procedurally synthesized. No real payment network is contacted.
-* **Deterministic Risk Actions**: Model probabilities feed into auditable deterministic threshold rules. Machine learning scores inform decisions but never take un-audited autonomous actions.
-* **Analyst Workspace Isolation**: User accounts maintain segregated session partitions and database ownership.
-
----
-
-<p align="center">
-  <strong>EvoPay AI</strong> — Adversarial Defense for Evolving Payment Fraud<br>
-  Live at <a href="https://evopay-dun.vercel.app">evopay-dun.vercel.app</a>
-</p>
+- Pilots on anonymised partner transaction streams
+- Automatic model retraining when a blind spot is confirmed
+- UPI-specific attack families (collect-request scams, QR swaps, mule onboarding)
+- Managed deployment on Google Cloud

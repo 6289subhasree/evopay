@@ -2,7 +2,7 @@
 export const CHAPTERS = [
   { path: '/dashboard', title: 'Command Center', kicker: 'Operational overview', key: 'd' },
   { path: '/red-team', title: 'Red Team Lab', kicker: 'Adversarial operations', key: 'r' },
-  { path: '/simulation', title: 'Attack Simulator', kicker: 'Controlled environment', key: 's' },
+  { path: '/simulation', title: 'Attack Simulator', kicker: 'Attack simulation', key: 's' },
   { path: '/arena', title: 'Evolution Arena', kicker: 'Red vs Blue, live', key: 'e' },
   { path: '/transactions', title: 'Transactions', kicker: 'Payment intelligence', key: 't' },
   { path: '/checkout', title: 'Live Checkout', kicker: 'Customer view', key: 'o' },

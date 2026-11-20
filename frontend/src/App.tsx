@@ -15,6 +15,7 @@ import Settings from './pages/Settings'
 import { ApiError, api, type DashboardData, type User } from './lib/api'
 import { mockUser } from './lib/mockData'
 import Auth from './pages/Auth'
+import Landing from './pages/Landing'
 import { NotificationBell } from './components/NotificationBell'
 import Arena from './pages/Arena'
 import Checkout from './pages/Checkout'
@@ -27,7 +28,7 @@ type RouteConfig = { title: string; kicker: string; icon: typeof LayoutDashboard
 const routes: Record<string, RouteConfig> = {
   '/dashboard': { title: 'Command Center', kicker: 'Operational overview', icon: LayoutDashboard, description: 'Recorded simulation activity.' },
   '/red-team': { title: 'Red Team', kicker: 'Adversarial operations', icon: Target, description: 'Explore controlled fraud simulations.' },
-  '/simulation': { title: 'Attack Simulator', kicker: 'Controlled environment', icon: Radar, description: 'Run attack scenarios.' },
+  '/simulation': { title: 'Attack Simulator', kicker: 'Attack simulation', icon: Radar, description: 'Run attack scenarios.' },
   '/arena': { title: 'Evolution Arena', kicker: 'Red vs Blue, live', icon: Swords, description: 'Watch attacks evolve against an adaptive defence.' },
   '/transactions': { title: 'Transactions', kicker: 'Payment intelligence', icon: CreditCard, description: 'Inspect recorded payment events.' },
   '/checkout': { title: 'Live Checkout', kicker: 'Customer view', icon: ShoppingCart, description: 'See what customers experience for each decision.' },
@@ -68,19 +69,22 @@ function Dashboard({ navigate }: { navigate: (path: string) => void }) {
   </div>
 }
 
-function TopBar({ config, user, onLogout, path, navigate }: { config: RouteConfig; user: User; onLogout: () => void; path: string; navigate: (path: string) => void }) { const initials = user.display_name.split(/\s+/).map((part) => part[0]).join('').slice(0, 2).toUpperCase(); return <header className="top-bar"><div className="mobile-title"><config.icon size={16} />{config.title}</div><div className="top-context"><ChapterCount path={path} /><span>{config.kicker}</span><b>Controlled environment</b></div><div className="top-actions"><NotificationBell navigate={navigate} /><div className="user-chip"><div className="user-avatar">{initials}</div><span><b>{user.display_name}</b><small>{user.email}</small></span><button className="logout-button" onClick={onLogout}>Sign out</button></div></div></header> }
+function TopBar({ config, user, onLogout, path, navigate }: { config: RouteConfig; user: User; onLogout: () => void; path: string; navigate: (path: string) => void }) { const initials = user.display_name.split(/\s+/).map((part) => part[0]).join('').slice(0, 2).toUpperCase(); return <header className="top-bar"><div className="mobile-title"><config.icon size={16} />{config.title}</div><div className="top-context"><ChapterCount path={path} /><span>{config.kicker}</span><b>Secure workspace</b></div><div className="top-actions"><NotificationBell navigate={navigate} /><div className="user-chip"><div className="user-avatar">{initials}</div><span><b>{user.display_name}</b><small>{user.email}</small></span><button className="logout-button" onClick={onLogout}>Sign out</button></div></div></header> }
 
 function App() {
   const [user, setUser] = useState<User | null>(null)
   const [restoring, setRestoring] = useState(true)
   const [sessionError, setSessionError] = useState<string | null>(null)
   const [sessionAttempt, setSessionAttempt] = useState(0)
-  const [path, setPath] = useState(window.location.pathname in routes ? window.location.pathname : '/dashboard')
+  const resolvePath = (pathname: string) => pathname === '/' || pathname === '' ? '/' : pathname in routes ? pathname : '/dashboard'
+  const [path, setPath] = useState(resolvePath(window.location.pathname))
   useEffect(() => { let active = true; setRestoring(true); setSessionError(null); api.me().then((value) => { if (active) setUser(value) }).catch((reason) => { if (!active) return; if (reason instanceof ApiError && reason.status === 401) setUser(null); else setSessionError(reason instanceof Error ? reason.message : 'Unable to restore the secure session.') }).finally(() => { if (active) setRestoring(false) }); const expired = () => { if (active) setUser(null) }; window.addEventListener('evopay:session-expired', expired); return () => { active = false; window.removeEventListener('evopay:session-expired', expired) } }, [sessionAttempt])
-  useEffect(() => { const onPop = () => setPath(window.location.pathname in routes ? window.location.pathname : '/dashboard'); window.addEventListener('popstate', onPop); return () => window.removeEventListener('popstate', onPop) }, [])
+  useEffect(() => { const onPop = () => setPath(resolvePath(window.location.pathname)); window.addEventListener('popstate', onPop); return () => window.removeEventListener('popstate', onPop) }, [])
   const navigate = (nextPath: string) => { window.history.pushState({}, '', nextPath); setPath(nextPath); window.scrollTo({ top: 0, behavior: 'smooth' }) }
   const config = routes[path] ?? routes['/dashboard']
+  useEffect(() => { if (path !== '/') document.title = `${config.title} · EvoPay AI` }, [path, config.title])
   const logout = async () => { try { await api.logout() } finally { setUser(null) } }
+  if (path === '/') return <Landing navigate={navigate} signedIn={!!user} />
   if (restoring) return <div className="session-restore"><div className="brand-symbol"><ShieldCheck size={18} /></div><span>Restoring secure session</span></div>
   if (sessionError) return <div className="session-restore"><div className="brand-symbol"><TriangleAlert size={18} /></div><h1>Connection unavailable</h1><p>{sessionError}</p><div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}><button className="primary-button" onClick={() => setSessionAttempt((value) => value + 1)}>Retry connection</button><button className="primary-button" style={{ background: 'rgba(255,255,255,0.1)' }} onClick={() => { setSessionError(null); setUser(mockUser) }}>Explore in Demo Mode</button></div></div>
   if (!user) return <Auth onAuthenticated={setUser} />
