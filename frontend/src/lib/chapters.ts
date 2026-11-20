@@ -5,11 +5,14 @@ export const CHAPTERS = [
   { path: '/simulation', title: 'Attack Simulator', kicker: 'Controlled environment', key: 's' },
   { path: '/arena', title: 'Evolution Arena', kicker: 'Red vs Blue, live', key: 'e' },
   { path: '/transactions', title: 'Transactions', kicker: 'Payment intelligence', key: 't' },
+  { path: '/checkout', title: 'Live Checkout', kicker: 'Customer view', key: 'o' },
   { path: '/network', title: 'Fraud Network', kicker: 'Entity intelligence', key: 'n' },
   { path: '/blue-team', title: 'Blue Team', kicker: 'Defense operations', key: 'b' },
   { path: '/playground', title: 'What-If Lab', kicker: 'Explainable risk', key: 'p' },
+  { path: '/policy', title: 'Policy Backtester', kicker: 'Safe rule changes', key: 'l' },
   { path: '/incidents', title: 'Incidents', kicker: 'Response queue', key: 'i' },
   { path: '/analytics', title: 'Analytics', kicker: 'Measured results', key: 'a' },
+  { path: '/developers', title: 'Developers', kicker: 'API & integration', key: 'v' },
   { path: '/settings', title: 'Settings', kicker: 'Workspace configuration', key: 'c' },
 ] as const
 

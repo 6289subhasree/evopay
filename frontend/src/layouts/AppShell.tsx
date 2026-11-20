@@ -4,19 +4,21 @@ import { ScrollScene, useScroll3D } from '../components/Scroll3D'
 import { CommandPalette } from '../components/CommandPalette'
 import { SectionRail } from '../components/Editorial'
 import { Copilot } from '../components/AnalystAI'
-import { SlidersHorizontal, Swords } from 'lucide-react'
+import { Code2, Scale, ShoppingCart, SlidersHorizontal, Swords } from 'lucide-react'
 import { Blocks, CircleGauge, CreditCard, GitBranch, LayoutDashboard, LineChart, Network, Radar, RotateCcw, Settings, ShieldCheck, Target, TriangleAlert, X, Zap } from 'lucide-react'
 
-const nav = [{ label: 'Command Center', path: '/dashboard', icon: LayoutDashboard }, { label: 'Red Team', path: '/red-team', icon: Target, group: true }, { label: 'Attack Simulator', path: '/simulation', icon: Radar }, { label: 'Evolution Arena', path: '/arena', icon: Swords }, { label: 'Transactions', path: '/transactions', icon: CreditCard }, { label: 'Fraud Network', path: '/network', icon: Network }, { label: 'Blue Team', path: '/blue-team', icon: ShieldCheck, group: true }, { label: 'What-If Lab', path: '/playground', icon: SlidersHorizontal }, { label: 'Incidents', path: '/incidents', icon: TriangleAlert }, { label: 'Analytics', path: '/analytics', icon: LineChart }]
+const nav = [{ label: 'Command Center', path: '/dashboard', icon: LayoutDashboard }, { label: 'Red Team', path: '/red-team', icon: Target, group: true }, { label: 'Attack Simulator', path: '/simulation', icon: Radar }, { label: 'Evolution Arena', path: '/arena', icon: Swords }, { label: 'Transactions', path: '/transactions', icon: CreditCard }, { label: 'Live Checkout', path: '/checkout', icon: ShoppingCart }, { label: 'Fraud Network', path: '/network', icon: Network }, { label: 'Blue Team', path: '/blue-team', icon: ShieldCheck, group: true }, { label: 'What-If Lab', path: '/playground', icon: SlidersHorizontal }, { label: 'Policy Backtester', path: '/policy', icon: Scale }, { label: 'Incidents', path: '/incidents', icon: TriangleAlert }, { label: 'Analytics', path: '/analytics', icon: LineChart }, { label: 'Developers', path: '/developers', icon: Code2 }]
 const demoSteps = [
  { path: '/dashboard', label: 'Command Center', detail: 'Review recorded simulation counts, activity, and empty states.' },
  { path: '/red-team', label: 'Red Team Lab', detail: 'Choose a controlled attack configuration or inspect stored attacks.' },
  { path: '/simulation', label: 'Attack Simulator', detail: 'Start a simulation run; outcomes remain Not evaluated until the backend records evidence.' },
  { path: '/arena', label: 'Evolution Arena', detail: 'Watch an attack mutate across generations while the adaptive defence records blind spots and fights back.' },
  { path: '/transactions', label: 'Transactions', detail: 'Inspect transaction records and their current server decisions.' },
+ { path: '/checkout', label: 'Live Checkout', detail: 'Make a payment as a customer and watch EvoPay allow it, ask for an OTP, hold it or block it.' },
  { path: '/network', label: 'Fraud Network', detail: 'Review relationships derived from stored transaction records.' },
  { path: '/blue-team', label: 'Blue Team', detail: 'Inspect deterministic scores for a selected recorded transaction.' },
  { path: '/playground', label: 'What-If Lab', detail: 'Move payment signals and see the four-signal risk score and decision change instantly.' },
+ { path: '/policy', label: 'Policy Backtester', detail: 'Move the decision thresholds and replay them over recorded payments before changing anything live.' },
  { path: '/incidents', label: 'Incidents', detail: 'Review incidents and audit events that exist in the database.' },
  { path: '/analytics', label: 'Analytics', detail: 'Review measured values; unavailable performance remains Not evaluated.' },
 ]

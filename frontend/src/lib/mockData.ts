@@ -116,7 +116,7 @@ export function getMockRiskAnalysis(id: string): RiskAnalysis {
       velocity_anomaly: txn.risk_score > 70,
       device_reused: txn.device_id === 'D-X28',
       high_amount: txn.amount > 10000,
-      synthetic_profile: true,
+      new_identity_profile: true,
     },
     reasons: txn.risk_score > 70 ? ['Rapid authorization burst detected', 'Device linked to previous high-risk cluster'] : ['Behavior consistent with baseline profile'],
     recommended_action: txn.status,

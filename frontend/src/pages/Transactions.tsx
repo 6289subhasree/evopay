@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowUpRight, Ban, Check, Clock3, Filter, MapPin, RefreshCw, Search, ShieldAlert, Sparkles, User, X } from 'lucide-react'
 import { AskAnalystCard } from '../components/AnalystAI'
+import { Download } from 'lucide-react'
+import { downloadCsv, stamp } from '../lib/exportCsv'
 import { api, type Investigation, type RiskAnalysis, type Transaction } from '../lib/api'
 
 type StatusFilter = 'ALL' | 'ALLOWED' | 'VERIFY' | 'HOLD' | 'BLOCKED'
@@ -242,9 +244,14 @@ export default function Transactions() {
           <h1>Transactions</h1>
           <p className="subheading">Inspect payment events, signal evaluations, and server decisions.</p>
         </div>
-        <button className="secondary-button" onClick={load}>
-          <RefreshCw size={14} className={loading ? 'pulse-dot' : ''} /> Refresh Stream
-        </button>
+        <div className="heading-actions">
+          <button className="secondary-button" onClick={() => downloadCsv(`evopay-transactions-${stamp()}.csv`, filteredItems.map(({ id, created_at, customer_id, merchant_id, amount, location, payment_method, device_id, risk_score, status }) => ({ id, created_at, customer_id, merchant_id, amount_inr: amount, location, payment_method, device_id, risk_score, decision: status })))} disabled={!filteredItems.length}>
+            <Download size={14} /> Export CSV
+          </button>
+          <button className="secondary-button" onClick={load}>
+            <RefreshCw size={14} className={loading ? 'pulse-dot' : ''} /> Refresh Stream
+          </button>
+        </div>
       </div>
 
       <div style={{ display: 'flex', gap: '12px', marginBottom: '16px', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>

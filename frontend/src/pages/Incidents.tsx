@@ -19,6 +19,8 @@ import {
   X,
   Zap,
 } from 'lucide-react'
+import { Download } from 'lucide-react'
+import { downloadCsv, stamp } from '../lib/exportCsv'
 import { api, type AuditEvent, type Incident, type Investigation } from '../lib/api'
 
 type StatusFilter = 'ALL' | 'OPEN' | 'INVESTIGATING' | 'CONTAINED' | 'RESOLVED'
@@ -99,9 +101,14 @@ export default function Incidents() {
           <h1>Incidents</h1>
           <p className="subheading">Triage high-signal fraud threats, trigger AI investigation reports, and maintain an auditable state.</p>
         </div>
-        <button className="secondary-button" onClick={loadData}>
-          <RefreshCw size={14} className={loading ? 'pulse-dot' : ''} /> Refresh Queue
-        </button>
+        <div className="heading-actions">
+          <button className="secondary-button" onClick={() => downloadCsv(`evopay-incidents-${stamp()}.csv`, filtered.map(({ id, created_at, title, severity, status, transaction_id, attack_id, risk_score, reasons }) => ({ id, created_at, title, severity, status, transaction_id, attack_id, risk_score, reasons })))} disabled={!filtered.length}>
+            <Download size={14} /> Export CSV
+          </button>
+          <button className="secondary-button" onClick={loadData}>
+            <RefreshCw size={14} className={loading ? 'pulse-dot' : ''} /> Refresh Queue
+          </button>
+        </div>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '20px' }}>

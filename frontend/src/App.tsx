@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { SlidersHorizontal, Swords } from 'lucide-react'
+import { Code2, Scale, ShoppingCart, SlidersHorizontal, Swords } from 'lucide-react'
 import { Activity, Bell, ChevronRight, Circle, CreditCard, Gauge, LayoutDashboard, LineChart, Network as NetworkIcon, Radar, Settings as SettingsIcon, ShieldCheck, Sparkles, Target, TriangleAlert } from 'lucide-react'
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { AppShell } from './layouts/AppShell'
@@ -15,7 +15,11 @@ import Settings from './pages/Settings'
 import { ApiError, api, type DashboardData, type User } from './lib/api'
 import { mockUser } from './lib/mockData'
 import Auth from './pages/Auth'
+import { NotificationBell } from './components/NotificationBell'
 import Arena from './pages/Arena'
+import Checkout from './pages/Checkout'
+import Policy from './pages/Policy'
+import Developers from './pages/Developers'
 import Playground from './pages/Playground'
 import { ChapterCount, LiveTape, PageOutro } from './components/Editorial'
 
@@ -26,11 +30,14 @@ const routes: Record<string, RouteConfig> = {
   '/simulation': { title: 'Attack Simulator', kicker: 'Controlled environment', icon: Radar, description: 'Run attack scenarios.' },
   '/arena': { title: 'Evolution Arena', kicker: 'Red vs Blue, live', icon: Swords, description: 'Watch attacks evolve against an adaptive defence.' },
   '/transactions': { title: 'Transactions', kicker: 'Payment intelligence', icon: CreditCard, description: 'Inspect recorded payment events.' },
+  '/checkout': { title: 'Live Checkout', kicker: 'Customer view', icon: ShoppingCart, description: 'See what customers experience for each decision.' },
   '/network': { title: 'Fraud Network', kicker: 'Entity intelligence', icon: NetworkIcon, description: 'Map recorded entity relationships.' },
   '/blue-team': { title: 'Blue Team', kicker: 'Defense operations', icon: ShieldCheck, description: 'Inspect deterministic risk decisions.' },
   '/playground': { title: 'What-If Lab', kicker: 'Explainable risk', icon: SlidersHorizontal, description: 'Change payment signals and see the score react.' },
+  '/policy': { title: 'Policy Backtester', kicker: 'Safe rule changes', icon: Scale, description: 'Replay new thresholds over recorded payments.' },
   '/incidents': { title: 'Incidents', kicker: 'Response queue', icon: TriangleAlert, description: 'Manage recorded investigations.' },
   '/analytics': { title: 'Analytics', kicker: 'Measured results', icon: LineChart, description: 'Review metrics supported by stored records.' },
+  '/developers': { title: 'Developers', kicker: 'API & integration', icon: Code2, description: 'Integration guide and live API console.' },
   '/settings': { title: 'Settings', kicker: 'Workspace configuration', icon: SettingsIcon, description: 'Manage local workspace preferences.' },
 }
 
@@ -61,7 +68,7 @@ function Dashboard({ navigate }: { navigate: (path: string) => void }) {
   </div>
 }
 
-function TopBar({ config, user, onLogout, path }: { config: RouteConfig; user: User; onLogout: () => void; path: string }) { const initials = user.display_name.split(/\s+/).map((part) => part[0]).join('').slice(0, 2).toUpperCase(); return <header className="top-bar"><div className="mobile-title"><config.icon size={16} />{config.title}</div><div className="top-context"><ChapterCount path={path} /><span>{config.kicker}</span><b>Controlled environment</b></div><div className="top-actions"><button className="icon-button" aria-label="Notifications"><Bell size={18} /></button><div className="user-chip"><div className="user-avatar">{initials}</div><span><b>{user.display_name}</b><small>{user.email}</small></span><button className="logout-button" onClick={onLogout}>Sign out</button></div></div></header> }
+function TopBar({ config, user, onLogout, path, navigate }: { config: RouteConfig; user: User; onLogout: () => void; path: string; navigate: (path: string) => void }) { const initials = user.display_name.split(/\s+/).map((part) => part[0]).join('').slice(0, 2).toUpperCase(); return <header className="top-bar"><div className="mobile-title"><config.icon size={16} />{config.title}</div><div className="top-context"><ChapterCount path={path} /><span>{config.kicker}</span><b>Controlled environment</b></div><div className="top-actions"><NotificationBell navigate={navigate} /><div className="user-chip"><div className="user-avatar">{initials}</div><span><b>{user.display_name}</b><small>{user.email}</small></span><button className="logout-button" onClick={onLogout}>Sign out</button></div></div></header> }
 
 function App() {
   const [user, setUser] = useState<User | null>(null)
@@ -77,6 +84,6 @@ function App() {
   if (restoring) return <div className="session-restore"><div className="brand-symbol"><ShieldCheck size={18} /></div><span>Restoring secure session</span></div>
   if (sessionError) return <div className="session-restore"><div className="brand-symbol"><TriangleAlert size={18} /></div><h1>Connection unavailable</h1><p>{sessionError}</p><div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}><button className="primary-button" onClick={() => setSessionAttempt((value) => value + 1)}>Retry connection</button><button className="primary-button" style={{ background: 'rgba(255,255,255,0.1)' }} onClick={() => { setSessionError(null); setUser(mockUser) }}>Explore in Demo Mode</button></div></div>
   if (!user) return <Auth onAuthenticated={setUser} />
-  return <AppShell path={path} onNavigate={navigate} onLogout={logout}><TopBar config={config} user={user} onLogout={logout} path={path} /><LiveTape /><AnimatePresence mode="wait"><motion.main key={path} className="page-content" initial={{ opacity: 0, y: 60, rotateX: 14, scale: .94, transformPerspective: 1400 }} animate={{ opacity: 1, y: 0, rotateX: 0, scale: 1, transformPerspective: 1400 }} exit={{ opacity: 0, y: -40, rotateX: -10, scale: .96, transformPerspective: 1400 }} transition={{ duration: .45, ease: [0.22, 1, 0.36, 1] }} style={{ transformOrigin: '50% 0%' }}>{path === '/dashboard' && <Dashboard navigate={navigate} />}{path === '/red-team' && <CommandDashboard navigate={navigate} />}{path === '/simulation' && <Simulation />}{path === '/arena' && <Arena />}{path === '/transactions' && <Transactions />}{path === '/network' && <Network />}{path === '/blue-team' && <BlueTeam />}{path === '/playground' && <Playground />}{path === '/incidents' && <Incidents />}{path === '/analytics' && <Analytics />}{path === '/settings' && <Settings />}<PageOutro path={path} navigate={navigate} /></motion.main></AnimatePresence></AppShell>
+  return <AppShell path={path} onNavigate={navigate} onLogout={logout}><TopBar config={config} user={user} onLogout={logout} path={path} navigate={navigate} /><LiveTape /><AnimatePresence mode="wait"><motion.main key={path} className="page-content" initial={{ opacity: 0, y: 60, rotateX: 14, scale: .94, transformPerspective: 1400 }} animate={{ opacity: 1, y: 0, rotateX: 0, scale: 1, transformPerspective: 1400 }} exit={{ opacity: 0, y: -40, rotateX: -10, scale: .96, transformPerspective: 1400 }} transition={{ duration: .45, ease: [0.22, 1, 0.36, 1] }} style={{ transformOrigin: '50% 0%' }}>{path === '/dashboard' && <Dashboard navigate={navigate} />}{path === '/red-team' && <CommandDashboard navigate={navigate} />}{path === '/simulation' && <Simulation />}{path === '/arena' && <Arena />}{path === '/transactions' && <Transactions />}{path === '/checkout' && <Checkout />}{path === '/network' && <Network />}{path === '/blue-team' && <BlueTeam />}{path === '/playground' && <Playground />}{path === '/policy' && <Policy />}{path === '/incidents' && <Incidents />}{path === '/analytics' && <Analytics />}{path === '/developers' && <Developers />}{path === '/settings' && <Settings />}<PageOutro path={path} navigate={navigate} /></motion.main></AnimatePresence></AppShell>
 }
 export default App
