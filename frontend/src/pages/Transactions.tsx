@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowUpRight, Ban, Check, Clock3, Filter, MapPin, RefreshCw, Search, ShieldAlert, Sparkles, User, X } from 'lucide-react'
+import { AskAnalystCard } from '../components/AnalystAI'
 import { api, type Investigation, type RiskAnalysis, type Transaction } from '../lib/api'
 
 type StatusFilter = 'ALL' | 'ALLOWED' | 'VERIFY' | 'HOLD' | 'BLOCKED'
@@ -129,6 +130,8 @@ function DetailDrawer({
         ))}
       </div>
       {error && <div className="error-state" style={{ padding: 12, marginTop: 12 }}>{error}</div>}
+
+      <AskAnalystCard mode="transaction" context={{ transaction: txn, analysis }} title="Gemini investigation brief" label="Generate brief" />
 
       {investigation && (
         <div className="glass-card" style={{ padding: '14px', margin: '18px 0', borderColor: '#596738' }}>
