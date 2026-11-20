@@ -26,8 +26,8 @@ export function LiveTape() {
       <em>risk {txn.risk_score}</em>
     </span>
   })
-  return <div className="live-tape" aria-label="Recorded synthetic transactions">
-    <span className="tape-label"><i />Synthetic tape</span>
+  return <div className="live-tape" aria-label="Recorded transactions">
+    <span className="tape-label"><i />Live tape</span>
     <div className="tape-track"><div className="tape-run">{row}{row}</div></div>
   </div>
 }
@@ -83,7 +83,7 @@ export function ChapterCount({ path }: { path: string }) {
 export function PageOutro({ path, navigate }: { path: string; navigate: (path: string) => void }) {
   const index = chapterIndex(path)
   const next = CHAPTERS[(index + 1) % CHAPTERS.length]
-  const words = ['Synthetic only', 'No production network', 'Every number is recorded', 'Controlled adversarial research']
+  const words = ['Simulate the attack', 'Score every payment', 'Explain every decision', 'Adapt the defence']
   const band = words.map((word) => <span key={word}>{word}<i>✦</i></span>)
   return <footer className="page-outro">
     <div className="outro-marquee" aria-hidden="true"><div>{band}{band}{band}</div></div>
