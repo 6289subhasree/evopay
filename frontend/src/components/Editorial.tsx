@@ -5,7 +5,7 @@ import { CHAPTERS, chapterIndex } from '../lib/chapters'
 
 const pad = (value: number) => String(value).padStart(2, '0')
 
-/** Stock-ticker style tape of recorded synthetic transactions. Pauses on hover. */
+/** Stock-ticker style tape of recorded transactions. Pauses on hover. */
 export function LiveTape() {
   const [items, setItems] = useState<Transaction[]>([])
   useEffect(() => {

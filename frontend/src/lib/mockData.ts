@@ -91,9 +91,9 @@ export const mockAnalyticsData: AnalyticsData = {
 }
 
 export const mockThreatPatterns: ThreatPattern[] = [
-  { id: 1, name: 'Velocity burst', description: 'Rapid authorizations across a synthetic device cluster', severity: 'HIGH' },
+  { id: 1, name: 'Velocity burst', description: 'Rapid authorizations across a shared device cluster', severity: 'HIGH' },
   { id: 2, name: 'Mule convergence', description: 'Multiple customers converging on one merchant relationship', severity: 'CRITICAL' },
-  { id: 3, name: 'Behavioral mimicry', description: 'Synthetic transactions closely matching legitimate user distributions', severity: 'MEDIUM' },
+  { id: 3, name: 'Behavioral mimicry', description: 'Transactions closely matching legitimate user distributions', severity: 'MEDIUM' },
 ]
 
 export const mockModelVersions: ModelVersion[] = [

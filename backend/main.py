@@ -241,9 +241,9 @@ def generate_attack(payload: AttackGenerateRequest, user: dict = Depends(current
         customer_ids = [f"SYN-C-{attack_id[3:]}-{index + 1:03d}" for index in range(int(generated["accounts"]))]
         device_ids = [f"SYN-D-{attack_id[3:]}-{index + 1:03d}" for index in range(int(generated["devices"]))]
         merchant_ids = [f"SYN-M-{attack_id[3:]}-{index + 1:03d}" for index in range(merchants)]
-        connection.executemany("INSERT INTO customers (id, name, city, user_id) VALUES (?, ?, ?, ?)", [(item, f"Synthetic customer {index + 1}", "Simulation Lab", user["id"]) for index, item in enumerate(customer_ids)])
+        connection.executemany("INSERT INTO customers (id, name, city, user_id) VALUES (?, ?, ?, ?)", [(item, f"Customer {index + 1}", "Simulation Lab", user["id"]) for index, item in enumerate(customer_ids)])
         connection.executemany("INSERT INTO devices (id, platform, risk_score, user_id) VALUES (?, ?, ?, ?)", [(item, "Simulated device", int(generated["attack_score"]), user["id"]) for item in device_ids])
-        connection.executemany("INSERT INTO merchants (id, name, city, user_id) VALUES (?, ?, ?, ?)", [(item, f"Synthetic merchant {index + 1}", "Simulation Lab", user["id"]) for index, item in enumerate(merchant_ids)])
+        connection.executemany("INSERT INTO merchants (id, name, city, user_id) VALUES (?, ?, ?, ?)", [(item, f"Merchant {index + 1}", "Simulation Lab", user["id"]) for index, item in enumerate(merchant_ids)])
         risk_score = int(generated["attack_score"])
         classification = analyze_transaction({"risk_score": risk_score})["classification"]
         status = {"LOW": "ALLOWED", "MEDIUM": "VERIFY", "HIGH": "HOLD", "CRITICAL": "BLOCKED"}[classification]
@@ -388,7 +388,7 @@ def adapt_defense(payload: DefenseAdaptRequest, user: dict = Depends(current_use
     before = row("SELECT detection_probability FROM attacks WHERE user_id = ? ORDER BY created_at DESC LIMIT 1", (user["id"],))
     before_score = round(float(before["detection_probability"]), 1) if before and before["detection_probability"] is not None else None
     with get_connection() as connection:
-        connection.execute("INSERT INTO threat_patterns (name, description, severity, user_id) VALUES (?, ?, ?, ?)", (payload.pattern, "Observed synthetic pattern added to defensive policy", "CRITICAL", user["id"]))
+        connection.execute("INSERT INTO threat_patterns (name, description, severity, user_id) VALUES (?, ?, ?, ?)", (payload.pattern, "Observed pattern added to defensive policy", "CRITICAL", user["id"]))
         audit(connection, user["id"], "defense_pattern_recorded", payload.pattern, {"before_detection_score": before_score, "evaluation_required": True})
         connection.commit()
     return {"before_detection_score": before_score, "after_detection_score": None, "model_version": None, "pattern": payload.pattern}

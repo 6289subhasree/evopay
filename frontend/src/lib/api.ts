@@ -104,7 +104,7 @@ function handleMockRequest<T>(path: string, init?: RequestInit): T {
     try { body = JSON.parse((init?.body as string) || '{}') } catch { /* ignore */ }
     return {
       id: 'EV-0' + (419 + Math.floor(Math.random() * 50)),
-      name: body.strategy || 'Synthetic Attack',
+      name: body.strategy || 'Generated Attack',
       severity: 'HIGH',
       status: 'EVALUATED',
       accounts: 10,

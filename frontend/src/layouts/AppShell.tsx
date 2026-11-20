@@ -8,9 +8,9 @@ import { Blocks, CircleGauge, CreditCard, GitBranch, LayoutDashboard, LineChart,
 const nav = [{ label: 'Command Center', path: '/dashboard', icon: LayoutDashboard }, { label: 'Red Team', path: '/red-team', icon: Target, group: true }, { label: 'Attack Simulator', path: '/simulation', icon: Radar }, { label: 'Transactions', path: '/transactions', icon: CreditCard }, { label: 'Fraud Network', path: '/network', icon: Network }, { label: 'Blue Team', path: '/blue-team', icon: ShieldCheck, group: true }, { label: 'Incidents', path: '/incidents', icon: TriangleAlert }, { label: 'Analytics', path: '/analytics', icon: LineChart }]
 const demoSteps = [
  { path: '/dashboard', label: 'Command Center', detail: 'Review recorded simulation counts, activity, and empty states.' },
- { path: '/red-team', label: 'Red Team Lab', detail: 'Choose a controlled attack configuration or inspect stored synthetic attacks.' },
+ { path: '/red-team', label: 'Red Team Lab', detail: 'Choose a controlled attack configuration or inspect stored attacks.' },
  { path: '/simulation', label: 'Attack Simulator', detail: 'Start a simulation run; outcomes remain Not evaluated until the backend records evidence.' },
- { path: '/transactions', label: 'Transactions', detail: 'Inspect synthetic transaction records and their current server decisions.' },
+ { path: '/transactions', label: 'Transactions', detail: 'Inspect transaction records and their current server decisions.' },
  { path: '/network', label: 'Fraud Network', detail: 'Review relationships derived from stored transaction records.' },
  { path: '/blue-team', label: 'Blue Team', detail: 'Inspect deterministic scores for a selected recorded transaction.' },
  { path: '/incidents', label: 'Incidents', detail: 'Review incidents and audit events that exist in the database.' },

@@ -18,7 +18,7 @@ import { api, type AuditEvent } from '../lib/api'
 export default function Settings() {
   const [saved, setSaved] = useState(false)
   const [workspaceName, setWorkspaceName] = useState('EvoPay Security Lab')
-  const [env, setEnv] = useState('Synthetic Simulation Sandbox')
+  const [env, setEnv] = useState('Simulation Sandbox')
   const [allowThreshold, setAllowThreshold] = useState(30)
   const [stepUpThreshold, setStepUpThreshold] = useState(60)
   const [holdThreshold, setHoldThreshold] = useState(80)
@@ -81,7 +81,7 @@ export default function Settings() {
                 onChange={(e) => setEnv(e.target.value)}
                 style={{ width: '100%', height: '36px', background: '#1f1e1a', border: '1px solid #3a3931', borderRadius: '5px', color: '#f6f4ee', padding: '0 12px', fontSize: '12px' }}
               >
-                <option>Synthetic Simulation Sandbox</option>
+                <option>Simulation Sandbox</option>
                 <option>Staging Simulator</option>
                 <option>Production Verification</option>
               </select>

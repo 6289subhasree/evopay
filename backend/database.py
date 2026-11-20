@@ -106,7 +106,7 @@ def seed_demo_database(connection: sqlite3.Connection) -> None:
         ])
     if connection.execute("SELECT COUNT(*) FROM threat_patterns").fetchone()[0] == 0:
         connection.executemany("INSERT INTO threat_patterns (name, description, severity) VALUES (?, ?, ?)", [
-            ("Velocity burst", "Rapid authorizations across a synthetic device cluster", "HIGH"),
+            ("Velocity burst", "Rapid authorizations across a shared device cluster", "HIGH"),
             ("Mule convergence", "Multiple customers converging on one merchant relationship", "CRITICAL"),
         ])
     if connection.execute("SELECT COUNT(*) FROM model_versions").fetchone()[0] == 0:

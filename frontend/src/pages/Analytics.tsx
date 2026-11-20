@@ -30,7 +30,7 @@ export default function Analytics() {
         <div>
           <p className="eyebrow">Performance Intelligence <span>•</span> Defense Metrics</p>
           <h1>Analytics</h1>
-          <p className="subheading">Metrics calculated from recorded synthetic simulation data.</p>
+          <p className="subheading">Metrics calculated from recorded simulation data.</p>
         </div>
         <button className="secondary-button" onClick={loadData}>
           <RefreshCw size={14} className={loading ? 'pulse-dot' : ''} /> Refresh Analytics

@@ -10,7 +10,7 @@ function CardStack3D() {
   }
   return <div className="auth-3d" onPointerMove={onMove} onPointerLeave={() => setTilt({ x: 0, y: 0 })} aria-hidden="true">
     <div className="auth-3d-stage" style={{ transform: `rotateX(${18 + tilt.y}deg) rotateY(${-22 + tilt.x}deg)` }}>
-      {['risk', 'synthetic', 'evopay'].map((label, index) => <div className={`pay-card c${index}`} key={label}>
+      {['risk', 'review', 'evopay'].map((label, index) => <div className={`pay-card c${index}`} key={label}>
         <div className="pay-card-top"><span className="chip" /><Blocks size={16} /></div>
         <div className="pay-card-num">•••• •••• •••• {['4821', '0917', '2026'][index]}</div>
         <div className="pay-card-bottom"><small>{label.toUpperCase()}</small><small>{['BLOCKED', 'REVIEW', 'CLEARED'][index]}</small></div>
@@ -46,7 +46,7 @@ export default function Auth({ onAuthenticated }: { onAuthenticated: (user: User
   return <main className="auth-page">
     <section className="auth-story">
       <div className="auth-brand"><span><Blocks size={18} /></span>EvoPay <b>Lab</b></div>
-      <div className="auth-story-copy"><p>CONTROLLED ADVERSARIAL RESEARCH</p><h1>Your simulation records.<br />Your isolated workspace.</h1><span>Server-side sessions and strict record ownership keep each analyst's synthetic experiments separate.</span></div>
+      <div className="auth-story-copy"><p>CONTROLLED ADVERSARIAL RESEARCH</p><h1>Your simulation records.<br />Your isolated workspace.</h1><span>Server-side sessions and strict record ownership keep each analyst's experiments separate.</span></div>
       <CardStack3D />
       <div className="auth-assurance"><ShieldCheck size={16} /><div><strong>Session protected</strong><small>Credentials and session tokens never enter browser storage.</small></div></div>
     </section>

@@ -235,9 +235,9 @@ export default function Transactions() {
     <div className="data-page">
       <div className="data-page-heading" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '24px' }}>
         <div>
-<p className="eyebrow">Payment Intelligence <span>•</span> Recorded synthetic data</p>
+<p className="eyebrow">Payment Intelligence <span>•</span> Recorded data</p>
           <h1>Transactions</h1>
-          <p className="subheading">Inspect synthetic payment events, signal evaluations, and server decisions.</p>
+          <p className="subheading">Inspect payment events, signal evaluations, and server decisions.</p>
         </div>
         <button className="secondary-button" onClick={load}>
           <RefreshCw size={14} className={loading ? 'pulse-dot' : ''} /> Refresh Stream
@@ -295,7 +295,7 @@ export default function Transactions() {
             <span>Decision</span>
           </div>
 
-          {loading && <div style={{ padding: '36px', textAlign: 'center' }} className="loading-state">Loading synthetic transaction stream</div>}
+          {loading && <div style={{ padding: '36px', textAlign: 'center' }} className="loading-state">Loading transaction stream</div>}
 {error && <div style={{ padding: '24px', textAlign: 'center', color: '#ef747b' }} className="error-state">Transaction API unavailable. No substitute data is being shown.</div>}
 
           {!loading && filteredItems.length === 0 && (
@@ -342,7 +342,7 @@ export default function Transactions() {
       </section>
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '14px', color: '#818077', fontSize: '11px', fontFamily: 'DM Mono, monospace' }}>
-        <span>Showing {filteredItems.length} of {items.length} synthetic transactions</span>
+        <span>Showing {filteredItems.length} of {items.length} transactions</span>
         <span>Click any row to inspect explainability and execute actions</span>
       </div>
 
