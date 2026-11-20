@@ -42,7 +42,7 @@ Set-ExecutionPolicy -Scope Process Bypass
 ```
 
 The script:
-1. enables Cloud Run, Cloud Build, Artifact Registry and Secret Manager,
+1. enables Cloud Run, Cloud Build, Artifact Registry and Secret Manager, and gives Cloud Build permission to build from source (`roles/run.builder`),
 2. asks for your **Gemini API key** (typing is hidden; Enter skips) and stores it in **Secret Manager**,
 3. builds the backend container and deploys it to **Cloud Run**,
 4. writes the Cloud Run address into `vercel.json` (so Vercel forwards `/api/*`) and `frontend/.env.production`,
@@ -99,6 +99,7 @@ Until `vercel.json` contains the Cloud Run rewrite, the Vercel site keeps using 
 | Symptom | Fix |
 |---|---|
 | `Billing account ... not found` / APIs won't enable | Link billing to the project (step 1.2). |
+| `...compute@developer.gserviceaccount.com does not have storage.objects.get access` | New projects lack the build permission. Run `gcloud projects add-iam-policy-binding PROJECT_ID --member=serviceAccount:PROJECT_NUMBER-compute@developer.gserviceaccount.com --role=roles/run.builder`, wait 2 minutes, re-run the script. (The script now does this automatically.) |
 | Cloud Run health check returns 403 | Your organisation blocks public Cloud Run services. Use a personal Google account/project, or ask the admin to allow `allUsers` as invoker on `evopay-api`. |
 | `/api/health` on Vercel shows the app page instead of JSON | Vercel hasn't redeployed with the new `vercel.json` yet, or the change wasn't pushed. Check the latest deployment in Vercel. |
 | Copilot shows "Gemini unavailable" | Re-run the script and paste the key, or check it in Google AI Studio. Logs: `gcloud run services logs read evopay-api --region asia-south1`. |

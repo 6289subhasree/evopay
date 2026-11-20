@@ -25,6 +25,12 @@ Step "Enabling Cloud Run, Cloud Build, Artifact Registry and Secret Manager"
 gcloud services enable run.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com secretmanager.googleapis.com
 Check "Enabling APIs (is billing linked to the project?)"
 
+$ProjectNumber = (gcloud projects describe $ProjectId --format="value(projectNumber)").Trim()
+Check "Reading the project number"
+Step "Allowing Cloud Build to build from source (roles/run.builder)"
+gcloud projects add-iam-policy-binding $ProjectId --member="serviceAccount:$ProjectNumber-compute@developer.gserviceaccount.com" --role="roles/run.builder" --condition=None | Out-Null
+Check "Granting roles/run.builder"
+
 # --- Gemini key -> Secret Manager -------------------------------------------
 $secure = Read-Host "Gemini API key (hidden; press Enter to skip)" -AsSecureString
 $GeminiKey = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($secure))
@@ -41,7 +47,6 @@ if ($GeminiKey) {
   Remove-Item $tmp -Force
   $GeminiKey = $null
   if ($saved -ne 0) { throw "Saving the Gemini key failed." }
-  $ProjectNumber = gcloud projects describe $ProjectId --format="value(projectNumber)"
   gcloud secrets add-iam-policy-binding gemini-api-key --member="serviceAccount:$ProjectNumber-compute@developer.gserviceaccount.com" --role="roles/secretmanager.secretAccessor" | Out-Null
   Check "Granting Cloud Run access to the Gemini key"
   $SecretFlag = @("--set-secrets", "GEMINI_API_KEY=gemini-api-key:latest")

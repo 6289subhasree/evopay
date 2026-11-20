@@ -20,6 +20,12 @@ gcloud config set project "$PROJECT_ID" >/dev/null
 step "Enabling Cloud Run, Cloud Build, Artifact Registry and Secret Manager"
 gcloud services enable run.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com secretmanager.googleapis.com
 
+PROJECT_NUMBER="$(gcloud projects describe "$PROJECT_ID" --format='value(projectNumber)')"
+step "Allowing Cloud Build to build from source (roles/run.builder)"
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+  --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
+  --role="roles/run.builder" --condition=None >/dev/null
+
 read -r -s -p "Gemini API key (hidden; press Enter to skip): " GEMINI_KEY; echo
 SECRET_FLAGS=()
 if [[ -n "$GEMINI_KEY" ]]; then
@@ -29,7 +35,6 @@ if [[ -n "$GEMINI_KEY" ]]; then
   else
     printf '%s' "$GEMINI_KEY" | gcloud secrets create gemini-api-key --replication-policy=automatic --data-file=- >/dev/null
   fi
-  PROJECT_NUMBER="$(gcloud projects describe "$PROJECT_ID" --format='value(projectNumber)')"
   gcloud secrets add-iam-policy-binding gemini-api-key \
     --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
     --role="roles/secretmanager.secretAccessor" >/dev/null
