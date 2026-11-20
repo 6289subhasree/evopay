@@ -23,15 +23,19 @@ if (!url || url.protocol !== 'https:' || !url.hostname.endsWith('.run.app')) {
 }
 const origin = url.origin
 
-const vercelPath = join(root, 'vercel.json')
-const config = JSON.parse(readFileSync(vercelPath, 'utf8'))
+// Vercel reads vercel.json from the project's Root Directory: the repo root, or
+// frontend/ if the project is configured that way. Update both so either works.
 const spa = { source: '/((?!api/).*)', destination: '/index.html' }
-config.rewrites = [
-  { source: '/api/:path*', destination: `${origin}/api/:path*` },
-  ...(config.rewrites || []).filter((rule) => !rule.source.startsWith('/api/') && rule.source !== spa.source),
-  spa,
-]
-writeFileSync(vercelPath, JSON.stringify(config, null, 2) + '\n')
+for (const vercelPath of [join(root, 'vercel.json'), join(root, 'frontend', 'vercel.json')]) {
+  let config
+  try { config = JSON.parse(readFileSync(vercelPath, 'utf8')) } catch { continue }
+  config.rewrites = [
+    { source: '/api/:path*', destination: `${origin}/api/:path*` },
+    ...(config.rewrites || []).filter((rule) => !rule.source.startsWith('/api/') && rule.source !== spa.source && rule.source !== '/(.*)'),
+    spa,
+  ]
+  writeFileSync(vercelPath, JSON.stringify(config, null, 2) + '\n')
+}
 
 writeFileSync(join(root, 'frontend', '.env.production'), [
   '# Written by deploy/connect-vercel.mjs — Vercel forwards /api/* to Cloud Run (see vercel.json).',
@@ -42,4 +46,4 @@ writeFileSync(join(root, 'frontend', '.env.production'), [
 ].join('\n'))
 
 console.log(`Connected: Vercel /api/* -> ${origin}/api/*`)
-console.log('Updated vercel.json and frontend/.env.production')
+console.log('Updated vercel.json, frontend/vercel.json and frontend/.env.production')

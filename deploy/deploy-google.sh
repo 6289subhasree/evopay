@@ -56,9 +56,9 @@ echo "API is live at $URL"
 step "Connecting the Vercel web app to the API"
 node "$ROOT/deploy/connect-vercel.mjs" "$URL"
 
-read -r -p "Commit and push vercel.json + frontend/.env.production so Vercel redeploys? (y/n) " ANSWER
+read -r -p "Commit and push vercel.json files + frontend/.env.production so Vercel redeploys? (y/n) " ANSWER
 if [[ "$ANSWER" =~ ^([yY]|yes)$ ]]; then
-  (cd "$ROOT" && git add vercel.json frontend/.env.production && git commit -m "chore: connect Vercel web app to Cloud Run API" && git push)
+  (cd "$ROOT" && git add vercel.json frontend/vercel.json frontend/.env.production && git commit -m "chore: connect Vercel web app to Cloud Run API" && git push)
   echo "Pushed. Vercel will redeploy in about a minute."
 else
   echo "Not pushed. Commit vercel.json and frontend/.env.production yourself when ready."

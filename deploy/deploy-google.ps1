@@ -70,10 +70,10 @@ Write-Host "API is live at $Url"
 Step "Connecting the Vercel web app to the API"
 node "$Root\deploy\connect-vercel.mjs" $Url; Check "Updating vercel.json"
 
-$answer = Read-Host "Commit and push vercel.json + frontend/.env.production so Vercel redeploys? (y/n)"
+$answer = Read-Host "Commit and push vercel.json files + frontend/.env.production so Vercel redeploys? (y/n)"
 if ($answer -match '^(y|yes)$') {
   Push-Location $Root
-  git add vercel.json frontend/.env.production; Check "git add"
+  git add vercel.json frontend/vercel.json frontend/.env.production; Check "git add"
   git commit -m "chore: connect Vercel web app to Cloud Run API"; Check "git commit"
   git push; Check "git push"
   Pop-Location
